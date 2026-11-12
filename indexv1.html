@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anesthesia Conference Guide — UCSF Residents</title>
+  <style>
+    :root {
+      --navy: #1a3a5c;
+      --teal: #0d9488;
+      --teal-light: #ccfbf1;
+      --open-green: #16a34a;
+      --open-light: #dcfce7;
+      --amber: #d97706;
+      --amber-light: #fef3c7;
+      --slate: #475569;
+      --slate-light: #f1f5f9;
+      --closed-gray: #9ca3af;
+      --closed-bg: #f9fafb;
+      --past-bg: #f3f4f6;
+      --white: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --radius: 10px;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f4f8;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    a { color: var(--teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--navy);
+      color: white;
+      padding: 2rem 2rem 1.5rem;
+    }
+    header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: .25rem; }
+    header .subtitle { font-size: .95rem; opacity: .8; margin-bottom: .5rem; }
+    header .meta { font-size: .8rem; opacity: .6; }
+    header .meta span { margin-right: 1.5rem; }
+
+    /* ── ALERT BANNER ── */
+    .alerts { background: var(--amber-light); border-bottom: 3px solid var(--amber); padding: .75rem 2rem; }
+    .alerts h3 { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--amber); margin-bottom: .4rem; }
+    .alert-items { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .alert-chip {
+      background: white;
+      border: 1.5px solid var(--amber);
+      border-radius: 20px;
+      padding: .3rem .75rem;
+      font-size: .82rem;
+      font-weight: 600;
+      color: #92400e;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .alert-chip .dot { width: 8px; height: 8px; background: var(--open-green); border-radius: 50%; flex-shrink: 0; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* ── CONTROLS ── */
+    .controls {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: .75rem 2rem;
+      display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .controls-label { font-size: .8rem; font-weight: 600; color: var(--text-muted); margin-right: .25rem; white-space: nowrap; }
+    .filter-btn {
+      border: 1.5px solid var(--border);
+      background: white;
+      color: var(--slate);
+      border-radius: 20px;
+      padding: .3rem .8rem;
+      font-size: .8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+    .filter-btn:hover { border-color: var(--teal); color: var(--teal); }
+    .filter-btn.active { background: var(--navy); border-color: var(--navy); color: white; }
+
+    /* ── MAIN CONTENT ── */
+    main { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1.5rem 3rem; }
+
+    /* ── YEAR SECTION ── */
+    .year-section { margin-bottom: 2.5rem; }
+    .year-header {
+      display: flex; align-items: center; gap: .75rem;
+      margin-bottom: 1rem;
+    }
+    .year-label {
+      background: var(--navy);
+      color: white;
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      padding: .3rem .75rem;
+      border-radius: 4px;
+    }
+    .year-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--navy); }
+    .year-count { font-size: .8rem; color: var(--text-muted); background: var(--slate-light); padding: .2rem .6rem; border-radius: 20px; }
+    .year-divider { flex: 1; height: 1px; background: var(--border); }
+
+    /* ── CARDS GRID ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1rem;
+    }
+
+    /* ── CONFERENCE CARD ── */
+    .conf-card {
+      background: white;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: box-shadow .15s, transform .15s;
+      display: flex; flex-direction: column;
+    }
+    .conf-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); transform: translateY(-1px); }
+    .conf-card.past { opacity: .65; background: var(--past-bg); }
+    .conf-card.hidden { display: none; }
+
+    .card-header {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .9rem 1rem .75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-badge {
+      width: 48px; height: 48px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 800; color: white;
+      letter-spacing: -.01em; flex-shrink: 0; text-align: center; line-height: 1.2;
+    }
+    .card-title-block { flex: 1; min-width: 0; }
+    .card-abbr { font-size: 1rem; font-weight: 800; color: var(--navy); line-height: 1.1; }
+    .card-society { font-size: .72rem; color: var(--text-muted); margin-top: .1rem; line-height: 1.3; }
+
+    .card-body { padding: .75rem 1rem; flex: 1; }
+
+    .info-row {
+      display: flex; align-items: baseline; gap: .5rem;
+      margin-bottom: .4rem; font-size: .82rem;
+    }
+    .info-label {
+      width: 90px; flex-shrink: 0;
+      font-size: .7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .05em; color: var(--text-muted);
+    }
+    .info-value { color: var(--text); font-weight: 500; }
+
+    .deadline-row { margin-bottom: .4rem; }
+    .deadline-badge {
+      display: inline-flex; align-items: center; gap: .3rem;
+      font-size: .75rem; font-weight: 700;
+      padding: .2rem .6rem; border-radius: 4px;
+    }
+    .deadline-badge.open { background: var(--open-light); color: var(--open-green); }
+    .deadline-badge.open .dot { width: 7px; height: 7px; background: var(--open-green); border-radius: 50%; animation: pulse 1.5s infinite; }
+    .deadline-badge.soon { background: var(--amber-light); color: var(--amber); }
+    .deadline-badge.closed { background: #f3f4f6; color: var(--closed-gray); }
+    .deadline-badge.tbd { background: #eff6ff; color: #3b82f6; }
+
+    .focus-text {
+      font-size: .8rem; color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      margin-top: .6rem; padding-top: .5rem;
+      line-height: 1.45;
+    }
+
+    .card-tags {
+      display: flex; flex-wrap: wrap; gap: .3rem;
+      padding: .5rem 1rem .4rem;
+    }
+    .tag {
+      font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+      padding: .15rem .5rem; border-radius: 3px;
+    }
+
+    .card-footer {
+      padding: .6rem 1rem .8rem;
+      border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: .5rem; align-items: center;
+    }
+    .link-btn {
+      display: inline-flex; align-items: center; gap: .25rem;
+      font-size: .75rem; font-weight: 600;
+      padding: .3rem .7rem; border-radius: 5px;
+      transition: background .15s;
+    }
+    .link-btn.primary { background: var(--navy); color: white; }
+    .link-btn.primary:hover { background: #243d5e; text-decoration: none; color: white; }
+    .link-btn.secondary { background: var(--slate-light); color: var(--slate); }
+    .link-btn.secondary:hover { background: #e2e8f0; text-decoration: none; }
+    .link-btn.open-abstract { background: var(--open-green); color: white; }
+    .link-btn.open-abstract:hover { background: #15803d; text-decoration: none; color: white; }
+
+    /* ── TAG COLORS ── */
+    .tag-core      { background: #dbeafe; color: #1e40af; }
+    .tag-academic  { background: #ede9fe; color: #5b21b6; }
+    .tag-critical  { background: #fee2e2; color: #b91c1c; }
+    .tag-regional  { background: #fce7f3; color: #9d174d; }
+    .tag-cardiac   { background: #fee2e2; color: #991b1b; }
+    .tag-pediatric { background: #fef3c7; color: #92400e; }
+    .tag-trauma    { background: #ffedd5; color: #9a3412; }
+    .tag-technology{ background: #d1fae5; color: #065f46; }
+    .tag-ambulatory{ background: #e0f2fe; color: #075985; }
+    .tag-resident  { background: #fae8ff; color: #6b21a8; }
+    .tag-california{ background: #fef9c3; color: #713f12; }
+
+    /* ── BADGE COLORS ── */
+    .badge-navy  { background: var(--navy); }
+    .badge-teal  { background: var(--teal); }
+    .badge-red   { background: #dc2626; }
+    .badge-pink  { background: #db2777; }
+    .badge-purple{ background: #7c3aed; }
+    .badge-amber { background: #d97706; }
+    .badge-green { background: #16a34a; }
+    .badge-blue  { background: #2563eb; }
+    .badge-slate { background: #475569; }
+    .badge-rose  { background: #e11d48; }
+    .badge-orange{ background: #ea580c; }
+    .badge-indigo{ background: #4338ca; }
+    .badge-emerald{background: #059669; }
+
+    /* ── LEGEND ── */
+    .legend {
+      background: white; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: .75rem 1rem; margin-bottom: 1rem;
+      display: flex; flex-wrap: wrap; align-items: center; gap: .75rem;
+      font-size: .75rem;
+    }
+    .legend-title { font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; font-size: .68rem; }
+    .legend-item { display: flex; align-items: center; gap: .3rem; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      grid-column: 1/-1; text-align: center;
+      padding: 3rem; color: var(--text-muted); font-size: .9rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,.6);
+      text-align: center;
+      padding: 1.25rem;
+      font-size: .78rem;
+      margin-top: 2rem;
+    }
+    footer strong { color: rgba(255,255,255,.85); }
+
+    /* ── PRINT STYLES ── */
+    @media print {
+      body { background: white; font-size: 11pt; }
+      .controls, .alerts { position: static; }
+      .conf-card { break-inside: avoid; box-shadow: none; border: 1pt solid #ccc; }
+      .conf-card:hover { transform: none; }
+      header { background: white; color: black; border-bottom: 2pt solid black; }
+      .year-label { background: black; }
+      .link-btn { display: none; }
+      .card-footer { display: none; }
+      footer { background: white; color: #333; border-top: 1pt solid #ccc; }
+    }
+
+    @media (max-width: 600px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      header { padding: 1.25rem 1rem 1rem; }
+      main { padding: 1rem .75rem 2rem; }
+      .controls { padding: .6rem .75rem; }
+      .alerts { padding: .6rem .75rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Anesthesia Conference Guide</h1>
+  <div class="subtitle">Presentation &amp; abstract opportunities for UCSF Anesthesia Residents</div>
+  <div class="meta">
+    <span>Academic Years 2026–27 &amp; 2027–28</span>
+    <span>Last updated: May 2026</span>
+    <span>Organized by: Gregory A. Chinn, MD PhD — UCSF Anesthesia &amp; Perioperative Care</span>
+  </div>
+</header>
+
+<!-- OPEN DEADLINE ALERT -->
+<div class="alerts">
+  <h3>&#9888;&#65039; Abstract Deadlines Still Open</h3>
+  <div class="alert-items">
+    <div class="alert-chip">
+      <span class="dot"></span>
+      TASCON 2026 — Deadline <strong>June 28, 2026</strong> (6 weeks) · San Diego, Oct 16
+    </div>
+    <div class="alert-chip">
+      <span class="dot"></span>
+      ASRA Pain Medicine 2026 — Deadline <strong>Aug 7, 2026</strong> · Tampa, Nov 5–7
+    </div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="controls">
+  <span class="controls-label">Filter by:</span>
+  <button class="filter-btn active" data-filter="all">All Conferences</button>
+  <button class="filter-btn" data-filter="open">&#x1F7E2; Abstracts Open</button>
+  <button class="filter-btn" data-filter="core">General / Core</button>
+  <button class="filter-btn" data-filter="cardiac">Cardiac</button>
+  <button class="filter-btn" data-filter="pediatric">Pediatric</button>
+  <button class="filter-btn" data-filter="regional">Regional / Pain</button>
+  <button class="filter-btn" data-filter="critical">Critical Care</button>
+  <button class="filter-btn" data-filter="trauma">Trauma</button>
+  <button class="filter-btn" data-filter="education">Education</button>
+  <button class="filter-btn" data-filter="technology">Technology</button>
+  <button class="filter-btn" data-filter="ambulatory">Ambulatory</button>
+  <button class="filter-btn" data-filter="resident">Resident-Focused</button>
+</div>
+
+<main>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <span class="legend-title">Abstract Status Key:</span>
+    <span class="legend-item"><span class="deadline-badge open" style="padding:.1rem .45rem;font-size:.7rem;"><span class="dot"></span> OPEN</span> Accepting now</span>
+    <span class="legend-item"><span class="deadline-badge tbd" style="padding:.1rem .45rem;font-size:.7rem;">TBD</span> Not yet announced</span>
+    <span class="legend-item"><span class="deadline-badge closed" style="padding:.1rem .45rem;font-size:.7rem;">CLOSED</span> Deadline passed, conference upcoming</span>
+    <span class="legend-item" style="margin-left:auto;font-size:.7rem;color:var(--text-muted);">Always verify dates at official society websites before submitting.</span>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       ACADEMIC YEAR 2026–27
+  ════════════════════════════════════════════ -->
+  <div class="year-section" id="ay2627">
+    <div class="year-header">
+      <span class="year-label">AY 2026–27</span>
+      <h2>July 2026 – June 2027</h2>
+      <div class="year-divider"></div>
+    </div>
+    <div class="cards-grid" id="grid-2627">
+
+      <!-- TASCON 2026 -->
+      <div class="conf-card" data-tags="trauma core" data-abstract="open">
+        <div class="card-header">
+          <div class="card-badge badge-orange">TAS<br>CON</div>
+          <div class="card-title-block">
+            <div class="card-abbr">TASCON 2026</div>
+            <div class="card-society">Trauma Anesthesiology Society — Annual Conference</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">October 16, 2026</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">San Diego, CA (co-located with ASA)</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge open"><span class="dot"></span> OPEN — June 28, 2026</span>
+          </div>
+          <div class="focus-text">Trauma anesthesiology: hemorrhage control, damage-control resuscitation, airway management in trauma, neuroanesthesia for TBI, mass casualty care. Free abstract submission via ASA portal.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-trauma">Trauma</span>
+          <span class="tag tag-core">General Anesthesia</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://www.tashq.org/" class="link-btn primary" target="_blank">Conference Site</a>
+          <a href="https://www.asahq.org/annualmeeting/education/military/abstracts" class="link-btn open-abstract" target="_blank">&#x270D; Submit Abstract (OPEN)</a>
+        </div>
+      </div>
+
+      <!-- ASA ANESTHESIOLOGY 2026 -->
+      <div class="conf-card" data-tags="core academic critical" data-abstract="closed">
+        <div class="card-header">
+          <div class="card-badge badge-navy">ASA<br><span style="font-size:.55rem">2026</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">ANESTHESIOLOGY 2026</div>
+            <div class="card-society">American Society of Anesthesiologists — Annual Meeting</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">October 16–20, 2026</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">San Diego Convention Center, CA</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge closed">CLOSED — was March 31, 2026</span>
+          </div>
+          <div class="focus-text">The flagship anesthesia meeting. Covers all subspecialties: clinical research, simulation, education, practice management, patient safety, perioperative medicine, and wellness. Largest annual gathering in the field (~16,000 attendees).</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-core">General Anesthesia</span>
+          <span class="tag tag-academic">Academic</span>
+          <span class="tag tag-critical">Critical Care</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://www.asahq.org/meetings/anesthesiology-annual-meeting" class="link-btn primary" target="_blank">Conference Site</a>
+          <a href="https://www.asahq.org/annualmeeting/education/submissions" class="link-btn secondary" target="_blank">Submission Info</a>
+        </div>
+      </div>
+
+      <!-- ASRA Pain Medicine 2026 -->
+      <div class="conf-card" data-tags="regional" data-abstract="open">
+        <div class="card-header">
+          <div class="card-badge badge-pink">ASRA<br><span style="font-size:.55rem">PAIN</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">ASRA Pain Medicine 2026</div>
+            <div class="card-society">American Society of Regional Anesthesia &amp; Pain Medicine</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">November 5–7, 2026</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Tampa, FL</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge open"><span class="dot"></span> OPEN — August 7, 2026</span>
+          </div>
+          <div class="focus-text">25th Annual Pain Medicine Meeting. Interventional pain, chronic pain management, neuromodulation, opioid use disorder, multimodal analgesia, and practice guidelines. Excellent venue for pain medicine case reports and QI.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-regional">Regional/Pain</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://asra.com/events-education/pain-medicine-meeting" class="link-btn primary" target="_blank">Conference Site</a>
+          <a href="https://asrapmabstracts.secure-platform.com/a" class="link-btn open-abstract" target="_blank">&#x270D; Submit Abstract (OPEN)</a>
+        </div>
+      </div>
+
+      <!-- SEA Fall 2026 -->
+      <div class="conf-card" data-tags="education academic" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-purple">SEA<br><span style="font-size:.55rem">FALL</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">SEA Fall Meeting 2026</div>
+            <div class="card-society">Society for Education in Anesthesia</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">November 12, 2026</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Swissôtel Chicago, Chicago, IL</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — check seahq.org</span>
+          </div>
+          <div class="focus-text">Theme: <em>"Innovations in Anesthesia Education: Integrating Pedagogy and Technology."</em> Focuses on curriculum development, simulation, assessment tools, graduate medical education, and faculty development in anesthesia.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-education">Education</span>
+          <span class="tag tag-academic">Academic</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://www.seahq.org/2026-fall-meeting" class="link-btn primary" target="_blank">Conference Site</a>
+          <a href="https://www.seahq.org/call-for-abstracts" class="link-btn secondary" target="_blank">Abstract Info</a>
+        </div>
+      </div>
+
+      <!-- STA 2027 -->
+      <div class="conf-card" data-tags="technology core" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-emerald">STA<br><span style="font-size:.55rem">2027</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">STA Annual Meeting 2027</div>
+            <div class="card-society">Society for Technology in Anesthesia</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">January 14–17, 2027</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">TBD</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — check stahq.org</span>
+          </div>
+          <div class="focus-text">Anesthesia technology, monitoring systems, AI/ML in perioperative care, closed-loop drug delivery, decision support tools, and device innovation. Strong venue for technology-focused resident projects.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-technology">Technology</span>
+          <span class="tag tag-core">General Anesthesia</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://www.stahq.org/events/annual-meeting" class="link-btn primary" target="_blank">Conference Site</a>
+          <a href="https://www.stahq.org/events/annual-meeting/call-for-abstracts" class="link-btn secondary" target="_blank">Abstract Info</a>
+        </div>
+      </div>
+
+      <!-- CSA Winter 2027 -->
+      <div class="conf-card" data-tags="core california" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-amber">CSA<br><span style="font-size:.55rem">WINT</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">CSA Winter Conference 2027</div>
+            <div class="card-society">California Society of Anesthesiologists</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">January 18–22, 2027</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Westin Maui Resort &amp; Spa, Ka'anapali, Maui, HI</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — check csahq.org</span>
+          </div>
+          <div class="focus-text">CME-focused clinical updates in anesthesia practice. California-specific regulatory and policy updates. Networking with CA anesthesiologists. Relevant for UCSF residents interested in CA practice environment.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-core">General Anesthesia</span>
+          <span class="tag tag-california">California</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://csahq.org/events/" class="link-btn primary" target="_blank">Conference Site</a>
+        </div>
+      </div>
+
+      <!-- SPA-AAP 2027 -->
+      <div class="conf-card" data-tags="pediatric" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-amber" style="background:#f59e0b;">SPA<br><span style="font-size:.55rem">AAP</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">SPA-AAP 2027</div>
+            <div class="card-society">Society for Pediatric Anesthesia / American Academy of Pediatrics</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">March 5–7, 2027</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Atlantis Paradise Island, Nassau, Bahamas</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — typically Nov–Dec 2026</span>
+          </div>
+          <div class="focus-text">Comprehensive pediatric anesthesia: neonatal and infant anesthesia, congenital anomalies, pediatric critical care, pain in children, rare syndromes. Accepts original research, case reports, and QI projects. Joint meeting with AAP strengthens multidisciplinary focus.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-pediatric">Pediatric</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://pedsanesthesia.org/" class="link-btn primary" target="_blank">Conference Site</a>
+          <a href="https://www2.pedsanesthesia.org/meetings/2026winter/abstracts/" class="link-btn secondary" target="_blank">Abstract Info (2026 ref)</a>
+        </div>
+      </div>
+
+      <!-- CCAS 2027 -->
+      <div class="conf-card" data-tags="cardiac pediatric" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-red">CCAS<br><span style="font-size:.5rem">2027</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">CCAS Annual Meeting 2027</div>
+            <div class="card-society">Congenital Cardiac Anesthesia Society</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">~March 2027 (TBD)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">TBD</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — typically Nov 2026</span>
+          </div>
+          <div class="focus-text">Congenital cardiac anesthesia: CHD physiology, anesthesia for catheterization lab, cardiac surgery in neonates and children, ECMO management, hybrid procedures. Co-located with SPA in 2026. Strong case series and outcomes focus.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-cardiac">Cardiac</span>
+          <span class="tag tag-pediatric">Pediatric</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://ccasociety.org/" class="link-btn primary" target="_blank">Conference Site</a>
+          <a href="https://ccasociety.org/meetings/upcoming/" class="link-btn secondary" target="_blank">Upcoming Meetings</a>
+        </div>
+      </div>
+
+      <!-- AUA 2027 -->
+      <div class="conf-card" data-tags="academic education" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-blue">AUA<br><span style="font-size:.55rem">2027</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">AUA Annual Meeting 2027</div>
+            <div class="card-society">Association of University Anesthesiologists</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">April 2–4, 2027</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">TMC3 Collaborative Building (Helix Hall), Houston, TX</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — typically November 2026</span>
+          </div>
+          <div class="focus-text">Premier academic anesthesiology society meeting. Research-heavy: translational science, health services research, medical education, faculty development. Ideal for residents pursuing academic careers. Travel awards available for trainees.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-academic">Academic</span>
+          <span class="tag tag-education">Education</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://www.auahq.org/" class="link-btn primary" target="_blank">Conference Site</a>
+          <a href="https://www.auahq.org/future-meetings" class="link-btn secondary" target="_blank">Future Meetings</a>
+        </div>
+      </div>
+
+      <!-- ASRA Regional 2027 -->
+      <div class="conf-card" data-tags="regional" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-pink">ASRA<br><span style="font-size:.5rem">RA/AP</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">ASRA Regional &amp; Acute Pain 2027</div>
+            <div class="card-society">American Society of Regional Anesthesia &amp; Pain Medicine</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">Spring 2027 — Atlanta, GA (tentative)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Atlanta, GA (TBD)</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — typically January 2027</span>
+          </div>
+          <div class="focus-text">Regional anesthesia and acute pain medicine: nerve blocks, ultrasound guidance, ERAS protocols, acute pain service operations, opioid-sparing techniques, obstetric analgesia. Hands-on workshops alongside scientific program.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-regional">Regional/Pain</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://asra.com/events-education/ra-acute-meeting" class="link-btn primary" target="_blank">Conference Site</a>
+          <a href="https://asra.com/about-asra/deadlines" class="link-btn secondary" target="_blank">ASRA Deadlines</a>
+        </div>
+      </div>
+
+      <!-- SEA Spring 2027 -->
+      <div class="conf-card" data-tags="education academic" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-purple">SEA<br><span style="font-size:.5rem">SPRG</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">SEA Spring Meeting 2027</div>
+            <div class="card-society">Society for Education in Anesthesia</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">~April 2027 (TBD)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">TBD</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — check seahq.org</span>
+          </div>
+          <div class="focus-text">Anesthesia education research, simulation-based education, curriculum development, assessment and milestones, faculty development, GME policy. Welcoming to resident-led education research and innovation projects.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-education">Education</span>
+          <span class="tag tag-academic">Academic</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://www.seahq.org/upcoming-meetings" class="link-btn primary" target="_blank">Conference Site</a>
+          <a href="https://www.seahq.org/call-for-abstracts" class="link-btn secondary" target="_blank">Call for Abstracts</a>
+        </div>
+      </div>
+
+      <!-- SCA 2027 -->
+      <div class="conf-card" data-tags="cardiac" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-red" style="background:#b91c1c;">SCA<br><span style="font-size:.55rem">2027</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">SCA Annual Meeting 2027</div>
+            <div class="card-society">Society of Cardiovascular Anesthesiologists</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">April 8–11, 2027</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Bellagio, Las Vegas, NV</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — typically Dec 2026</span>
+          </div>
+          <div class="focus-text">Cardiovascular anesthesia and perioperative cardiac medicine: TEE, valve surgery, TAVI/TAVR, ventricular assist devices, ECMO, cardiac output monitoring. Includes advanced TEE workshops. Strong outcomes research and case-based learning tracks.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-cardiac">Cardiac</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://scahq.org/event/2027-annual-meeting-workshops/" class="link-btn primary" target="_blank">Conference Site</a>
+          <a href="https://scahq.org/meetings-and-events/" class="link-btn secondary" target="_blank">SCA Meetings</a>
+        </div>
+      </div>
+
+      <!-- WARC 2027 -->
+      <div class="conf-card" data-tags="resident core" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-teal">WARC<br><span style="font-size:.5rem">2027</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">WARC 2027</div>
+            <div class="card-society">Western Anesthesia Residents' Conference — 64th Annual</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">~April 2027 (TBD)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">TBD — rotates among West Coast programs</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — typically Feb–Mar 2027</span>
+          </div>
+          <div class="focus-text"><strong>Resident-specific.</strong> Designed exclusively for anesthesia residents, fellows, and medical students at West Coast programs. Accepts original research, QI projects, and challenging case reports. Low-stakes, supportive venue — ideal first presentation experience. All presenters are trainees.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-resident">Resident-Focused</span>
+          <span class="tag tag-core">General Anesthesia</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://health.ucdavis.edu/anesthesiology/calendar/warc-2026/" class="link-btn primary" target="_blank">2026 Site (Ref)</a>
+          <a href="https://www.asahq.org/education-and-career/asa-resident-component/meetings-and-events" class="link-btn secondary" target="_blank">ASA Resident Events</a>
+        </div>
+      </div>
+
+      <!-- IARS / SOCCA / AUA 2027 -->
+      <div class="conf-card" data-tags="core critical academic" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-teal" style="background:#0f766e;">IARS<br>SOCCA</div>
+          <div class="card-title-block">
+            <div class="card-abbr">IARS / SOCCA 2027</div>
+            <div class="card-society">International Anesthesia Research Society &amp; Society of Critical Care Anesthesiologists</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">April 30 – May 2, 2027</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Hilton Chicago, Chicago, IL</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — typically Dec 2026</span>
+          </div>
+          <div class="focus-text">Basic and clinical anesthesia research alongside critical care anesthesia. Strongly research-focused: bench-to-bedside science, perioperative outcomes, critical care trials. IARS Mentored Research Awards available. Distinguished lecture series. Also includes AUA programming.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-core">General Anesthesia</span>
+          <span class="tag tag-critical">Critical Care</span>
+          <span class="tag tag-academic">Academic</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://meetings.iars.org/" class="link-btn primary" target="_blank">Conference Site</a>
+          <a href="https://meetings.iars.org/abstracts/submissions/" class="link-btn secondary" target="_blank">Abstract Submissions</a>
+        </div>
+      </div>
+
+      <!-- SAMBA 2027 -->
+      <div class="conf-card" data-tags="ambulatory" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-blue" style="background:#0369a1;">SAMBA<br><span style="font-size:.5rem">2027</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">SAMBA Annual Meeting 2027</div>
+            <div class="card-society">Society for Ambulatory Anesthesia</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">May 2027 (TBD)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">TBD</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — check sambahq.org</span>
+          </div>
+          <div class="focus-text">Ambulatory and outpatient anesthesia: PACU optimization, PONV management, same-day surgery outcomes, opioid-free anesthesia techniques, ERAS for ambulatory surgery. Growing focus on office-based anesthesia. Accepts original research, QI, and case reports.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-ambulatory">Ambulatory</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://www.sambahq.org/upcoming-meetings" class="link-btn primary" target="_blank">Conference Site</a>
+          <a href="https://www.sambahq.org/2026-abstract-submission" class="link-btn secondary" target="_blank">Abstract Info (2026 ref)</a>
+        </div>
+      </div>
+
+    </div><!-- /grid-2627 -->
+  </div><!-- /year-section -->
+
+
+  <!-- ════════════════════════════════════════════
+       ACADEMIC YEAR 2027–28
+  ════════════════════════════════════════════ -->
+  <div class="year-section" id="ay2728">
+    <div class="year-header">
+      <span class="year-label">AY 2027–28</span>
+      <h2>July 2027 &amp; Beyond</h2>
+      <div class="year-divider"></div>
+    </div>
+    <div class="cards-grid" id="grid-2728">
+
+      <!-- ASA 2027 -->
+      <div class="conf-card" data-tags="core academic critical" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-navy">ASA<br><span style="font-size:.55rem">2027</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">ANESTHESIOLOGY 2027</div>
+            <div class="card-society">American Society of Anesthesiologists — Annual Meeting</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">October 15–19, 2027</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Boston, MA</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — typically Jan–Mar 2027</span>
+          </div>
+          <div class="focus-text">The flagship annual meeting covering all anesthesia subspecialties. The largest anesthesia conference in the world. Oral and poster abstract presentations, panel discussions, workshops. Submit early — abstract deadline is typically March 31.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-core">General Anesthesia</span>
+          <span class="tag tag-academic">Academic</span>
+          <span class="tag tag-critical">Critical Care</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://www.asahq.org/annualmeeting/attend/futuredates" class="link-btn primary" target="_blank">Future Dates</a>
+          <a href="https://www.asahq.org/annualmeeting/education/submissions" class="link-btn secondary" target="_blank">Submission Info</a>
+        </div>
+      </div>
+
+      <!-- ASRA Pain Medicine 2027 -->
+      <div class="conf-card" data-tags="regional" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-pink">ASRA<br><span style="font-size:.55rem">PAIN</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">ASRA Pain Medicine 2027</div>
+            <div class="card-society">American Society of Regional Anesthesia &amp; Pain Medicine</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">November 2027 — Houston, TX</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Houston, TX</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — typically Aug 2027</span>
+          </div>
+          <div class="focus-text">Annual Pain Medicine Meeting. Interventional pain, chronic pain management, neuromodulation, opioid use disorder, multimodal analgesia, and practice guidelines.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-regional">Regional/Pain</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://asra.com/events-education/pain-medicine-meeting" class="link-btn primary" target="_blank">Conference Site</a>
+          <a href="https://asra.com/events-education/future-meetings" class="link-btn secondary" target="_blank">ASRA Future Meetings</a>
+        </div>
+      </div>
+
+      <!-- CSA Fall 2027 -->
+      <div class="conf-card" data-tags="core california" data-abstract="tbd">
+        <div class="card-header">
+          <div class="card-badge badge-amber">CSA<br><span style="font-size:.55rem">FALL</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">CSA Fall Conference 2027</div>
+            <div class="card-society">California Society of Anesthesiologists</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">November 1–5, 2027</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Grand Hyatt Kauai Resort &amp; Spa, Kauai, HI</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge tbd">TBD — check csahq.org</span>
+          </div>
+          <div class="focus-text">CME-focused clinical updates in anesthesia practice. California-specific regulatory and policy content. Networking with California anesthesiologists. Relevant for UCSF residents planning to practice in California.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-core">General Anesthesia</span>
+          <span class="tag tag-california">California</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://csahq.org/events/" class="link-btn primary" target="_blank">Conference Site</a>
+        </div>
+      </div>
+
+    </div><!-- /grid-2728 -->
+  </div><!-- /year-section -->
+
+
+  <!-- ════════════════════════════════════════════
+       REFERENCE: AY 2025–26 (PAST CYCLE)
+  ════════════════════════════════════════════ -->
+  <div class="year-section" id="ay2526">
+    <div class="year-header">
+      <span class="year-label" style="background:#6b7280;">AY 2025–26</span>
+      <h2 style="color:#6b7280;">Past Cycle — Plan Ahead for 2027</h2>
+      <div class="year-divider"></div>
+    </div>
+    <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:.75rem;">These conferences have passed for 2025–26. Listed here so residents can note typical dates and deadlines to plan submissions next year.</p>
+    <div class="cards-grid" id="grid-2526">
+
+      <!-- WARC 2026 PAST -->
+      <div class="conf-card past" data-tags="resident core" data-abstract="closed">
+        <div class="card-header">
+          <div class="card-badge badge-teal" style="opacity:.6;">WARC<br><span style="font-size:.5rem">2026</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">WARC 2026 <span style="font-size:.72rem;color:#9ca3af;">[PAST]</span></div>
+            <div class="card-society">Western Anesthesia Residents' Conference — 63rd Annual</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">April 24–25, 2026 (past)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Kimpton Sawyer Hotel, Sacramento, CA (UC Davis host)</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge closed">CLOSED — was ~Feb 2026</span>
+          </div>
+          <div class="focus-text">Resident-only conference. Original research, QI, challenging case reports. Hosted annually by West Coast residency programs on rotation.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-resident">Resident-Focused</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://health.ucdavis.edu/anesthesiology/calendar/warc-2026/" class="link-btn secondary" target="_blank">2026 Reference Site</a>
+        </div>
+      </div>
+
+      <!-- IARS/SOCCA 2026 PAST -->
+      <div class="conf-card past" data-tags="core critical academic" data-abstract="closed">
+        <div class="card-header">
+          <div class="card-badge badge-teal" style="background:#0f766e;opacity:.6;">IARS<br>SOCCA</div>
+          <div class="card-title-block">
+            <div class="card-abbr">IARS / SOCCA 2026 <span style="font-size:.72rem;color:#9ca3af;">[PAST]</span></div>
+            <div class="card-society">International Anesthesia Research Society &amp; SOCCA</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">May 1–3, 2026 (past)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Fairmont The Queen Elizabeth, Montreal, Canada</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge closed">CLOSED — was Dec 5, 2025 (late-breaking Jan 19, 2026)</span>
+          </div>
+          <div class="focus-text">Anesthesia research and critical care. Note for AY 2026–27: deadline typically falls in December prior to a May conference.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-core">General Anesthesia</span>
+          <span class="tag tag-critical">Critical Care</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://meetings.iars.org/" class="link-btn secondary" target="_blank">IARS Meeting Site</a>
+        </div>
+      </div>
+
+      <!-- AUA 2026 PAST -->
+      <div class="conf-card past" data-tags="academic education" data-abstract="closed">
+        <div class="card-header">
+          <div class="card-badge badge-blue" style="opacity:.6;">AUA<br><span style="font-size:.55rem">2026</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">AUA 2026 <span style="font-size:.72rem;color:#9ca3af;">[PAST]</span></div>
+            <div class="card-society">Association of University Anesthesiologists</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">March 27–29, 2026 (past)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">University of Washington, Seattle, WA</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge closed">CLOSED — was November 2, 2025</span>
+          </div>
+          <div class="focus-text">Academic anesthesiology. Abstract deadline typically early November for a late March/early April conference.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-academic">Academic</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://www.auahq.org/" class="link-btn secondary" target="_blank">AUA Site</a>
+        </div>
+      </div>
+
+      <!-- SPA 2026 PAST -->
+      <div class="conf-card past" data-tags="pediatric" data-abstract="closed">
+        <div class="card-header">
+          <div class="card-badge badge-amber" style="background:#f59e0b;opacity:.6;">SPA<br><span style="font-size:.55rem">2026</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">SPA-AAP 2026 <span style="font-size:.72rem;color:#9ca3af;">[PAST]</span></div>
+            <div class="card-society">Society for Pediatric Anesthesia / AAP</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">March 13–15, 2026 (past)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Denver, CO</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge closed">CLOSED — was November 17, 2025</span>
+          </div>
+          <div class="focus-text">Pediatric anesthesia. Abstract deadline typically mid-November for a mid-March conference.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-pediatric">Pediatric</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://pedsanesthesia.org/" class="link-btn secondary" target="_blank">SPA Site</a>
+        </div>
+      </div>
+
+      <!-- SCA 2026 PAST -->
+      <div class="conf-card past" data-tags="cardiac" data-abstract="closed">
+        <div class="card-header">
+          <div class="card-badge badge-red" style="background:#b91c1c;opacity:.6;">SCA<br><span style="font-size:.55rem">2026</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">SCA 2026 <span style="font-size:.72rem;color:#9ca3af;">[PAST]</span></div>
+            <div class="card-society">Society of Cardiovascular Anesthesiologists</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">April 23–26, 2026 (past)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Nashville, TN</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge closed">CLOSED — was December 1, 2025</span>
+          </div>
+          <div class="focus-text">Cardiovascular anesthesia. Abstract deadline typically Dec 1 for a late-April conference.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-cardiac">Cardiac</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://scahq.org/" class="link-btn secondary" target="_blank">SCA Site</a>
+        </div>
+      </div>
+
+      <!-- ASRA Regional 2026 PAST -->
+      <div class="conf-card past" data-tags="regional" data-abstract="closed">
+        <div class="card-header">
+          <div class="card-badge badge-pink" style="opacity:.6;">ASRA<br><span style="font-size:.5rem">2026</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">ASRA Regional &amp; Acute Pain 2026 <span style="font-size:.72rem;color:#9ca3af;">[PAST]</span></div>
+            <div class="card-society">American Society of Regional Anesthesia &amp; Pain Medicine</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">April 16–18, 2026 (past)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Sheraton Phoenix Downtown, Phoenix, AZ</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge closed">CLOSED — was January 6, 2026</span>
+          </div>
+          <div class="focus-text">Regional anesthesia and acute pain. Abstract deadline typically early January for an April conference.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-regional">Regional/Pain</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://asra.com/events-education/ra-acute-meeting" class="link-btn secondary" target="_blank">ASRA Site</a>
+        </div>
+      </div>
+
+      <!-- CCAS 2026 PAST -->
+      <div class="conf-card past" data-tags="cardiac pediatric" data-abstract="closed">
+        <div class="card-header">
+          <div class="card-badge badge-red" style="opacity:.6;">CCAS<br><span style="font-size:.5rem">2026</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">CCAS 2026 <span style="font-size:.72rem;color:#9ca3af;">[PAST]</span></div>
+            <div class="card-society">Congenital Cardiac Anesthesia Society</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">March 12, 2026 (past)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Sheraton Denver Downtown, Denver, CO</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge closed">CLOSED — was November 17, 2025 (Noon EST)</span>
+          </div>
+          <div class="focus-text">Congenital cardiac anesthesia. Abstract deadline mid-November for a mid-March conference.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-cardiac">Cardiac</span>
+          <span class="tag tag-pediatric">Pediatric</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://ccasociety.org/" class="link-btn secondary" target="_blank">CCAS Site</a>
+        </div>
+      </div>
+
+      <!-- CSA Annual 2026 PAST -->
+      <div class="conf-card past" data-tags="core california" data-abstract="closed">
+        <div class="card-header">
+          <div class="card-badge badge-amber" style="opacity:.6;">CSA<br><span style="font-size:.55rem">2026</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">CSA Annual 2026 <span style="font-size:.72rem;color:#9ca3af;">[PAST]</span></div>
+            <div class="card-society">California Society of Anesthesiologists</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">April 9–12, 2026 (past)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Disneyland Hotel, Anaheim, CA</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge closed">CLOSED — was ~February 10, 2026</span>
+          </div>
+          <div class="focus-text">Annual anesthesia conference for California. CME-focused with abstract presentations. Abstract deadline typically early February.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-core">General Anesthesia</span>
+          <span class="tag tag-california">California</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://csahq.org/" class="link-btn secondary" target="_blank">CSA Site</a>
+        </div>
+      </div>
+
+      <!-- SEA Spring 2026 PAST -->
+      <div class="conf-card past" data-tags="education academic" data-abstract="closed">
+        <div class="card-header">
+          <div class="card-badge badge-purple" style="opacity:.6;">SEA<br><span style="font-size:.5rem">2026</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">SEA Spring 2026 <span style="font-size:.72rem;color:#9ca3af;">[PAST]</span></div>
+            <div class="card-society">Society for Education in Anesthesia</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">April 24–26, 2026 (past)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Live! by Loews, St. Louis, MO</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge closed">CLOSED — was ~January 26, 2026</span>
+          </div>
+          <div class="focus-text">Theme: "Beyond the Anesthesia Machine: Finding Your Professional Purpose." Education research and faculty development.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-education">Education</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://www.seahq.org/" class="link-btn secondary" target="_blank">SEA Site</a>
+        </div>
+      </div>
+
+      <!-- SAMBA 2026 PAST -->
+      <div class="conf-card past" data-tags="ambulatory" data-abstract="closed">
+        <div class="card-header">
+          <div class="card-badge badge-blue" style="background:#0369a1;opacity:.6;">SAMBA<br><span style="font-size:.5rem">2026</span></div>
+          <div class="card-title-block">
+            <div class="card-abbr">SAMBA 2026 <span style="font-size:.72rem;color:#9ca3af;">[PAST]</span></div>
+            <div class="card-society">Society for Ambulatory Anesthesia — 41st Annual</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row"><span class="info-label">Dates</span><span class="info-value">May 13–16, 2026 (past)</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">Gaylord National Resort, Washington, DC</span></div>
+          <div class="deadline-row">
+            <span class="info-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">Abstract deadline</span><br>
+            <span class="deadline-badge closed">CLOSED — was ~Feb 2026</span>
+          </div>
+          <div class="focus-text">Ambulatory anesthesia. Co-located with Ambulatory Surgery Center Association (ASCA) Annual Meeting.</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-ambulatory">Ambulatory</span>
+        </div>
+        <div class="card-footer">
+          <a href="https://www.sambahq.org/" class="link-btn secondary" target="_blank">SAMBA Site</a>
+        </div>
+      </div>
+
+    </div><!-- /grid-2526 -->
+  </div><!-- /year-section past -->
+
+</main>
+
+<footer>
+  <strong>UCSF Anesthesia Resident Conference Guide</strong> — Compiled May 2026 by Gregory A. Chinn, MD PhD<br>
+  Always verify dates and deadlines at official society websites before submitting. Data may change after publication.
+</footer>
+
+<script>
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.conf-card');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      cards.forEach(card => {
+        const tags = (card.dataset.tags || '').split(' ');
+        const abstractStatus = card.dataset.abstract || '';
+        if (filter === 'all') {
+          card.classList.remove('hidden');
+        } else if (filter === 'open') {
+          card.classList.toggle('hidden', abstractStatus !== 'open');
+        } else {
+          card.classList.toggle('hidden', !tags.includes(filter));
+        }
+      });
+      // Update counts
+      updateCounts();
+    });
+  });
+
+  function updateCounts() {
+    document.querySelectorAll('.year-section').forEach(section => {
+      const visible = section.querySelectorAll('.conf-card:not(.hidden)').length;
+      const countEl = section.querySelector('.year-count');
+      if (countEl) countEl.textContent = visible + ' conference' + (visible !== 1 ? 's' : '');
+    });
+  }
+
+  // Add count badges to year headers
+  document.querySelectorAll('.year-header').forEach(header => {
+    const section = header.closest('.year-section');
+    const total = section.querySelectorAll('.conf-card').length;
+    const count = document.createElement('span');
+    count.className = 'year-count';
+    count.textContent = total + ' conferences';
+    header.appendChild(count);
+  });
+</script>
+
+</body>
+</html>

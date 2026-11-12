@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anesthesia Conference Guide — UCSF Residents</title>
+  <style>
+    :root {
+      --navy:        #1a3a5c;
+      --teal:        #0d9488;
+      --open-green:  #16a34a;
+      --open-light:  #dcfce7;
+      --amber:       #d97706;
+      --amber-light: #fef3c7;
+      --slate:       #475569;
+      --slate-light: #f1f5f9;
+      --border:      #e2e8f0;
+      --text:        #1e293b;
+      --text-muted:  #64748b;
+      --radius:      10px;
+      --shadow:      0 2px 8px rgba(0,0,0,0.08);
+      --sidebar-w:   196px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f4f8;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    a { color: var(--teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── HEADER ── */
+    header { background: var(--navy); color: white; padding: 1.5rem 2rem 1.25rem; }
+    header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: .2rem; }
+    header .subtitle { font-size: .88rem; opacity: .8; margin-bottom: .35rem; }
+    header .meta { font-size: .75rem; opacity: .6; }
+    header .meta span { margin-right: 1.5rem; }
+
+    /* ── ALERT BANNER ── */
+    .alerts { background: var(--amber-light); border-bottom: 3px solid var(--amber); padding: .6rem 2rem; }
+    .alerts h3 { font-size: .67rem; text-transform: uppercase; letter-spacing: .08em; color: var(--amber); margin-bottom: .35rem; }
+    .alert-items { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .alert-chip {
+      background: white; border: 1.5px solid var(--amber); border-radius: 20px;
+      padding: .25rem .7rem; font-size: .8rem; font-weight: 600; color: #92400e;
+      display: flex; align-items: center; gap: .35rem;
+    }
+    .alert-chip .dot { width: 7px; height: 7px; background: var(--open-green); border-radius: 50%; flex-shrink: 0; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* ── CONTROLS BAR ── */
+    .controls {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: .6rem 1.25rem; display: flex; align-items: center; gap: .4rem; flex-wrap: wrap;
+      position: sticky; top: 0; z-index: 20;
+    }
+    .controls-label { font-size: .75rem; font-weight: 700; color: var(--text-muted); white-space: nowrap; margin-right: .1rem; }
+    .controls-divider { width: 1px; height: 20px; background: var(--border); margin: 0 .35rem; flex-shrink: 0; }
+    .filter-btn, .view-btn {
+      border: 1.5px solid var(--border); background: white; color: var(--slate);
+      border-radius: 20px; padding: .25rem .75rem; font-size: .78rem; font-weight: 500;
+      cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .filter-btn:hover { border-color: var(--teal); color: var(--teal); }
+    .filter-btn.active { background: var(--navy); border-color: var(--navy); color: white; }
+    .view-btn { border-radius: 5px; }
+    .view-btn.active { background: var(--teal); border-color: var(--teal); color: white; }
+    .view-btn:hover:not(.active) { border-color: var(--teal); color: var(--teal); }
+
+    /* ── APP BODY: sidebar + content ── */
+    .app-body { display: flex; align-items: flex-start; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: white;
+      border-right: 1px solid var(--border);
+      position: sticky;
+      top: 43px; /* height of controls bar */
+      height: calc(100vh - 43px);
+      overflow-y: auto;
+      padding: .75rem .6rem 1.5rem;
+    }
+    .sidebar-title {
+      font-size: .65rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--navy); margin-bottom: .5rem;
+      padding-bottom: .35rem; border-bottom: 2px solid var(--navy);
+    }
+    /* ── Mini Calendar ── */
+    .mini-cal { margin-bottom: .85rem; }
+    .mini-cal-header {
+      font-size: .7rem; font-weight: 700; color: var(--navy);
+      margin-bottom: .25rem; text-align: center;
+    }
+    .mini-cal-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px;
+    }
+    .day-label {
+      font-size: .55rem; font-weight: 700; color: var(--text-muted);
+      text-align: center; padding: 1px 0;
+    }
+    .day-cell {
+      font-size: .6rem; text-align: center; padding: 2px 1px;
+      border-radius: 3px; cursor: default; position: relative;
+      line-height: 1.6; color: var(--text);
+    }
+    .day-cell.empty { visibility: hidden; }
+    .day-cell.today { font-weight: 900; color: var(--teal); }
+    .day-cell.has-conf {
+      font-weight: 700; border-radius: 3px; color: white;
+      cursor: pointer;
+    }
+    .day-cell.has-conf:hover { filter: brightness(1.15); outline: 2px solid white; }
+    @keyframes cardFlash {
+      0%   { box-shadow: 0 0 0 0 rgba(13,148,136,.8), var(--shadow); transform: translateY(0); }
+      15%  { box-shadow: 0 0 0 6px rgba(13,148,136,.5), 0 6px 24px rgba(0,0,0,.15); transform: translateY(-3px); }
+      30%  { box-shadow: 0 0 0 4px rgba(13,148,136,.6), 0 4px 20px rgba(0,0,0,.12); transform: translateY(-2px); }
+      80%  { box-shadow: 0 0 0 4px rgba(13,148,136,.4), 0 4px 20px rgba(0,0,0,.1); transform: translateY(-2px); }
+      100% { box-shadow: var(--shadow); transform: translateY(0); }
+    }
+    .card-flash { animation: cardFlash 3.5s ease forwards; }
+    .day-cell.has-deadline::after {
+      content: ''; position: absolute; bottom: 1px; left: 50%; transform: translateX(-50%);
+      width: 4px; height: 4px; background: #ef4444; border-radius: 50%;
+    }
+    .day-cell.has-deadline.has-conf::after { background: white; }
+    /* tooltip */
+    .day-cell[title]:hover::before {
+      content: attr(title);
+      position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%);
+      background: var(--navy); color: white; font-size: .6rem; white-space: nowrap;
+      padding: 2px 5px; border-radius: 3px; z-index: 100; pointer-events: none;
+    }
+    /* Sidebar legend */
+    .sidebar-legend { margin-top: .5rem; border-top: 1px solid var(--border); padding-top: .5rem; }
+    .legend-title { font-size: .6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: .35rem; }
+    .legend-item { display: flex; align-items: center; gap: .3rem; margin-bottom: .2rem; font-size: .62rem; color: var(--text); }
+    .legend-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    .legend-deadline { display: flex; align-items: center; gap: .3rem; font-size: .62rem; color: var(--text-muted); margin-top: .3rem; }
+    .legend-dot { width: 6px; height: 6px; background: #ef4444; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── CONTENT AREA ── */
+    .content-area { flex: 1; min-width: 0; padding: 1rem 1.25rem 3rem; }
+
+    /* ── YEAR SECTION ── */
+    .year-section { margin-bottom: 2.25rem; }
+    .year-header { display: flex; align-items: center; gap: .6rem; margin-bottom: .85rem; }
+    .year-label {
+      background: var(--navy); color: white;
+      font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em;
+      padding: .25rem .65rem; border-radius: 4px;
+    }
+    .year-label.past { background: #6b7280; }
+    .year-header h2 { font-size: 1rem; font-weight: 700; color: var(--navy); }
+    .year-header h2.past { color: #6b7280; }
+    .year-count { font-size: .75rem; color: var(--text-muted); background: var(--slate-light); padding: .15rem .55rem; border-radius: 20px; }
+    .year-divider { flex: 1; height: 1px; background: var(--border); }
+    .past-note { font-size: .78rem; color: var(--text-muted); margin-bottom: .65rem; }
+
+    /* ── CARDS GRID ── */
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: .85rem; }
+
+    /* ── CONFERENCE CARD ── */
+    .conf-card {
+      background: white; border-radius: var(--radius); border: 1.5px solid var(--border);
+      box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column;
+      transition: box-shadow .15s, transform .15s;
+    }
+    .conf-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); transform: translateY(-1px); }
+    .conf-card.past { opacity: .6; background: #f9fafb; }
+    .conf-card.hidden { display: none !important; }
+
+    .card-header { display: flex; align-items: center; gap: .65rem; padding: .8rem .9rem .7rem; border-bottom: 1px solid var(--border); }
+    .card-badge {
+      width: 44px; height: 44px; border-radius: 7px; display: flex; align-items: center;
+      justify-content: center; font-size: .65rem; font-weight: 800; color: white;
+      letter-spacing: -.01em; flex-shrink: 0; text-align: center; line-height: 1.2;
+    }
+    .card-title-block { flex: 1; min-width: 0; }
+    .card-abbr { font-size: .95rem; font-weight: 800; color: var(--navy); line-height: 1.15; }
+    .card-society { font-size: .68rem; color: var(--text-muted); margin-top: .05rem; line-height: 1.3; }
+
+    .card-body { padding: .65rem .9rem; flex: 1; }
+    .info-row { display: flex; align-items: baseline; gap: .45rem; margin-bottom: .35rem; font-size: .8rem; }
+    .info-label { width: 85px; flex-shrink: 0; font-size: .67rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); }
+    .info-value { color: var(--text); font-weight: 500; }
+    .deadline-badge {
+      display: inline-flex; align-items: center; gap: .25rem; font-size: .72rem; font-weight: 700;
+      padding: .18rem .55rem; border-radius: 4px;
+    }
+    .deadline-badge.open { background: var(--open-light); color: var(--open-green); }
+    .deadline-badge.open .dot { width: 6px; height: 6px; background: var(--open-green); border-radius: 50%; animation: pulse 1.5s infinite; }
+    .deadline-badge.closed { background: #f3f4f6; color: #9ca3af; }
+    .deadline-badge.tbd { background: #eff6ff; color: #3b82f6; }
+    .focus-text { font-size: .77rem; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: .5rem; padding-top: .45rem; line-height: 1.45; }
+
+    .card-tags { display: flex; flex-wrap: wrap; gap: .25rem; padding: .4rem .9rem .35rem; }
+    .tag { font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: .12rem .45rem; border-radius: 3px; }
+    .tag-core      { background: #dbeafe; color: #1e40af; }
+    .tag-academic  { background: #ede9fe; color: #5b21b6; }
+    .tag-critical  { background: #fee2e2; color: #b91c1c; }
+    .tag-regional  { background: #fce7f3; color: #9d174d; }
+    .tag-cardiac   { background: #fee2e2; color: #991b1b; }
+    .tag-pediatric { background: #fef3c7; color: #92400e; }
+    .tag-obstetric { background: #fce7f3; color: #9d174d; }
+    .tag-neuro { background: #ede9fe; color: #5b21b6; }
+    .tag-trauma    { background: #ffedd5; color: #9a3412; }
+    .tag-technology{ background: #d1fae5; color: #065f46; }
+    .tag-ambulatory{ background: #e0f2fe; color: #075985; }
+    .tag-resident  { background: #fae8ff; color: #6b21a8; }
+    .tag-california{ background: #fef9c3; color: #713f12; }
+
+    .card-footer { padding: .5rem .9rem .7rem; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: .4rem; }
+    .link-btn {
+      display: inline-flex; align-items: center; gap: .2rem;
+      font-size: .72rem; font-weight: 600; padding: .28rem .65rem; border-radius: 5px; transition: background .15s;
+    }
+    .link-btn.primary { background: var(--navy); color: white; }
+    .link-btn.primary:hover { background: #243d5e; text-decoration: none; color: white; }
+    .link-btn.secondary { background: var(--slate-light); color: var(--slate); }
+    .link-btn.secondary:hover { background: #e2e8f0; text-decoration: none; }
+    .link-btn.open-abstract { background: var(--open-green); color: white; }
+    .link-btn.open-abstract:hover { background: #15803d; text-decoration: none; color: white; }
+
+    /* ── LIST VIEW ── */
+    #list-view { display: none; }
+    #list-view.active { display: block; }
+    #grid-view.hidden { display: none; }
+
+    .list-table { width: 100%; border-collapse: collapse; font-size: .82rem; background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    .list-table thead { background: var(--navy); color: white; }
+    .list-table th { padding: .6rem .8rem; text-align: left; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; }
+    .list-table td { padding: .55rem .8rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .list-table tr:last-child td { border-bottom: none; }
+    .list-table tr:hover td { background: var(--slate-light); }
+    .list-table tr.list-past td { opacity: .55; }
+    .list-table tr.list-hidden { display: none; }
+    .list-date { font-weight: 700; color: var(--navy); white-space: nowrap; font-size: .8rem; }
+    .list-date small { display: block; font-size: .68rem; font-weight: 400; color: var(--text-muted); }
+    .list-badge {
+      display: inline-block; padding: .18rem .5rem; border-radius: 5px;
+      font-size: .7rem; font-weight: 800; color: white; white-space: nowrap;
+    }
+    .list-location { color: var(--text-muted); font-size: .78rem; white-space: nowrap; }
+    .list-tags { display: flex; flex-wrap: wrap; gap: .2rem; }
+    .list-links { display: flex; gap: .3rem; white-space: nowrap; }
+    .list-links a { font-size: .72rem; padding: .18rem .5rem; border-radius: 4px; font-weight: 600; }
+    .list-links a.primary { background: var(--navy); color: white; }
+    .list-links a.primary:hover { background: #243d5e; text-decoration: none; }
+    .list-links a.abstract-open { background: var(--open-green); color: white; }
+    .list-links a.abstract-open:hover { background: #15803d; text-decoration: none; }
+    .list-section-header td {
+      background: var(--slate-light); font-size: .7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted);
+      padding: .4rem .8rem; border-bottom: 1px solid var(--border);
+    }
+
+    /* ── LEGEND STRIP (grid view) ── */
+    .legend-strip {
+      background: white; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: .6rem .9rem; margin-bottom: .85rem;
+      display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; font-size: .72rem;
+    }
+    .legend-strip-title { font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; font-size: .65rem; }
+    .legend-strip-item { display: flex; align-items: center; gap: .25rem; }
+    .legend-strip-note { margin-left: auto; font-size: .68rem; color: var(--text-muted); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align: center; padding: 2.5rem; color: var(--text-muted); font-size: .88rem; grid-column: 1/-1; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--navy); color: rgba(255,255,255,.6); text-align: center; padding: 1.1rem; font-size: .75rem; }
+    footer strong { color: rgba(255,255,255,.85); }
+
+    /* ── PRINT ── */
+    @media print {
+      .sidebar, .controls, .alerts { display: none; }
+      .app-body { display: block; }
+      .content-area { padding: 0; }
+      .conf-card { break-inside: avoid; box-shadow: none; border: 1pt solid #ccc; }
+      .card-footer { display: none; }
+      header { background: white; color: black; border-bottom: 2pt solid black; }
+      footer { background: white; color: #333; }
+      #list-view { display: block !important; }
+      #grid-view { display: none !important; }
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 700px) {
+      .sidebar { display: none; }
+      .cards-grid { grid-template-columns: 1fr; }
+      header { padding: 1rem; }
+      .content-area { padding: .75rem .75rem 2rem; }
+      .controls { padding: .5rem .75rem; }
+      .alerts { padding: .5rem .75rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Anesthesia Conference Guide</h1>
+  <div class="subtitle">Presentation &amp; abstract opportunities for UCSF Anesthesia Residents</div>
+  <div class="meta">
+    <span>Academic Years 2026–27 &amp; 2027–28</span>
+    <span>Last updated: September 22, 2026</span>
+    <span>Gregory A. Chinn, MD PhD — UCSF Anesthesia &amp; Perioperative Care</span>
+  </div>
+</header>
+
+<div class="alerts" id="alert-banner">
+  <h3>&#9888;&#65039; Abstract Deadlines Still Open</h3>
+  <div class="alert-items" id="alert-items"></div>
+</div>
+
+<div class="controls">
+  <span class="controls-label">Filter:</span>
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="open">&#x1F7E2; Open Now</button>
+  <button class="filter-btn" data-filter="core">General</button>
+  <button class="filter-btn" data-filter="cardiac">Cardiac</button>
+  <button class="filter-btn" data-filter="pediatric">Pediatric</button>
+  <button class="filter-btn" data-filter="regional">Regional/Pain</button>
+  <button class="filter-btn" data-filter="critical">Critical Care</button>
+  <button class="filter-btn" data-filter="obstetric">Obstetric</button>
+  <button class="filter-btn" data-filter="neuro">Neuro</button>
+  <button class="filter-btn" data-filter="trauma">Trauma</button>
+  <button class="filter-btn" data-filter="education">Education</button>
+  <button class="filter-btn" data-filter="technology">Technology</button>
+  <button class="filter-btn" data-filter="ambulatory">Ambulatory</button>
+  <button class="filter-btn" data-filter="resident">Resident-Focused</button>
+  <div class="controls-divider"></div>
+  <span class="controls-label">View:</span>
+  <button class="view-btn active" id="btn-grid">&#9783; Cards</button>
+  <button class="view-btn" id="btn-list">&#9776; List by Date</button>
+</div>
+
+<div class="app-body">
+
+  <!-- ══ SIDEBAR CALENDAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Jul 2026–Sep 2027 Calendar</div>
+    <div id="sidebar-calendar"></div>
+    <div class="sidebar-legend" id="sidebar-legend"></div>
+  </aside>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <div class="content-area">
+
+    <!-- GRID VIEW -->
+    <div id="grid-view">
+
+      <div class="legend-strip">
+        <span class="legend-strip-title">Abstract Status:</span>
+        <span class="legend-strip-item"><span class="deadline-badge open" style="padding:.1rem .4rem;font-size:.68rem;"><span class="dot"></span> OPEN</span> Accepting now</span>
+        <span class="legend-strip-item"><span class="deadline-badge tbd" style="padding:.1rem .4rem;font-size:.68rem;">TBD</span> Not yet announced</span>
+        <span class="legend-strip-item"><span class="deadline-badge closed" style="padding:.1rem .4rem;font-size:.68rem;">CLOSED</span> Deadline passed</span>
+        <span class="legend-strip-note">Status follows saved dates; check the official site for changes. Date-only cutoffs use Pacific Time unless specified.</span>
+      </div>
+
+      <!-- Year sections populated by JS -->
+      <div class="year-section" id="section-2627">
+        <div class="year-header">
+          <span class="year-label">AY 2026–27</span>
+          <h2>July 2026 – June 2027</h2>
+          <div class="year-divider"></div>
+          <span class="year-count"></span>
+        </div>
+        <div class="cards-grid" id="grid-2627"></div>
+      </div>
+
+      <div class="year-section" id="section-2728">
+        <div class="year-header">
+          <span class="year-label">AY 2027–28</span>
+          <h2>July 2027 &amp; Beyond</h2>
+          <div class="year-divider"></div>
+          <span class="year-count"></span>
+        </div>
+        <div class="cards-grid" id="grid-2728"></div>
+      </div>
+
+      <div class="year-section" id="section-past">
+        <div class="year-header">
+          <span class="year-label past">AY 2025–26</span>
+          <h2 class="past">Past Cycle — Plan Ahead for 2027</h2>
+          <div class="year-divider"></div>
+          <span class="year-count"></span>
+        </div>
+        <p class="past-note">These conferences have concluded. Listed so residents can note typical abstract deadline patterns for next year.</p>
+        <div class="cards-grid" id="grid-past"></div>
+      </div>
+
+    </div><!-- /grid-view -->
+
+    <!-- LIST VIEW -->
+    <div id="list-view">
+      <table class="list-table" id="list-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Conference</th>
+            <th>Location</th>
+            <th>Abstract Deadline</th>
+            <th>Status</th>
+            <th>Subspecialty</th>
+            <th>Links</th>
+          </tr>
+        </thead>
+        <tbody id="list-tbody"></tbody>
+      </table>
+    </div>
+
+  </div><!-- /content-area -->
+</div><!-- /app-body -->
+
+<footer>
+  <strong>UCSF Anesthesia Resident Conference Guide</strong> — Compiled September 2026 by Gregory A. Chinn, MD PhD<br>
+  Always verify dates and deadlines at official society websites before submitting. Data may change after publication.
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// CONFERENCE DATA  (single source of truth)
+// dates: [year, month 1-12, day]
+// abstractDeadline: null if TBD
+// abstractStatus: last verified status; getAbstractStatus derives the live status.
+// Use abstractOpensOn ([y,m,d]) or abstractOpensAt (ISO with UTC offset) for confirmed openings.
+// abstractConfirmedOpenOn records when a call was verified open, not its original opening.
+// abstractClosesAt uses an explicit ISO timestamp when a cutoff time is published.
+// Date-only boundaries use abstractTimeZone, default America/Los_Angeles (UCSF).
+// ay: '2026-27' | '2027-28' | 'past'
+// ══════════════════════════════════════════════════════════════
+const CONFERENCES = [
+
+  // ─── AY 2026-27 ────────────────────────────────────────────
+  {
+    id: 'spa-fall-2026',
+    abbr: 'SPA Fall',
+    name: 'SPA 40th Annual Meeting 2026',
+    society: 'Society for Pediatric Anesthesia',
+    start: [2026,10,16], end: [2026,10,16],
+    location: 'Hilton San Diego Bayfront, San Diego, CA',
+    locationNote: 'Held just before the ASA Annual Meeting',
+    abstractDeadline: null,
+    abstractDeadlineText: 'Closed for 2026 — call opens ~spring for the fall meeting',
+    abstractStatus: 'closed',
+    abstractUrl: 'https://pedsanesthesia.org/call-for-abstracts/',
+    tags: ['pediatric'],
+    color: '#f59e0b',
+    ay: '2026-27',
+    url: 'https://pedsanesthesia.org/education-and-meetings/upcoming-meetings/',
+    focus: 'One-day pediatric anesthesia meeting the day before ASA opens in San Diego — easy add-on if you are already attending ASA. Registration and housing are open.',
+  },
+  {
+    id: 'tascon-2026',
+    abbr: 'TASCON',
+    name: 'TASCON 2026',
+    society: 'Trauma Anesthesiology Society',
+    start: [2026,10,16], end: [2026,10,16],
+    location: 'San Diego, CA',
+    locationNote: 'Co-located with ASA Annual Meeting',
+    abstractDeadline: [2026,6,28],
+    abstractDeadlineText: 'June 28, 2026',
+    abstractStatus: 'closed',
+    abstractUrl: 'https://www.asahq.org/annualmeeting/education/military/abstracts',
+    tags: ['trauma','core'],
+    color: '#ea580c',
+    ay: '2026-27',
+    url: 'https://www.tashq.org/events',
+    focus: 'Trauma anesthesiology: hemorrhage control, damage-control resuscitation, airway management in trauma, neuroanesthesia for TBI, mass casualty care. Free abstract submission via the ASA portal; registration still open.',
+  },
+  {
+    id: 'asa-2026',
+    abbr: 'ASA',
+    name: 'ANESTHESIOLOGY 2026',
+    society: 'American Society of Anesthesiologists',
+    start: [2026,10,16], end: [2026,10,20],
+    location: 'San Diego Convention Center, CA',
+    abstractDeadline: [2026,3,31],
+    abstractDeadlineText: 'March 31, 2026',
+    abstractStatus: 'closed',
+    abstractUrl: 'https://www.asahq.org/annualmeeting/education/submissions',
+    tags: ['core','academic','critical'],
+    color: '#1a3a5c',
+    ay: '2026-27',
+    url: 'https://www.asahq.org/meetings/anesthesiology-annual-meeting',
+    focus: 'Flagship annual anesthesia meeting (~16,000 attendees). All subspecialties: clinical research, simulation, education, practice management, patient safety, perioperative medicine, and wellness.',
+  },
+  {
+    id: 'asra-pain-2026',
+    abbr: 'ASRA Pain',
+    name: 'ASRA Pain Medicine 2026',
+    society: 'American Society of Regional Anesthesia & Pain Medicine',
+    start: [2026,11,5], end: [2026,11,7],
+    location: 'Tampa, FL',
+    abstractDeadline: [2026,8,7],
+    abstractDeadlineText: 'August 7, 2026',
+    abstractStatus: 'closed',
+    abstractUrl: 'https://asrapmabstracts.secure-platform.com/a',
+    tags: ['regional'],
+    color: '#db2777',
+    ay: '2026-27',
+    url: 'https://asra.com/events-education/pain-medicine-meeting',
+    focus: '25th Annual Pain Medicine Meeting. Interventional pain, chronic pain management, neuromodulation, opioid use disorder, multimodal analgesia. Fellows\' interventional pain workshop on Nov 4 (pre-meeting).',
+  },
+  {
+    id: 'sea-fall-2026',
+    abbr: 'SEA Fall',
+    name: 'SEA Fall Meeting 2026',
+    society: 'Society for Education in Anesthesia',
+    start: [2026,11,12], end: [2026,11,12],
+    location: 'Swissôtel Chicago, Chicago, IL',
+    locationNote: 'Held just before the SAAAPM Annual Meeting',
+    abstractDeadline: null,
+    abstractDeadlineText: 'Closed — SEA\'s open call is now for Spring 2027',
+    abstractStatus: 'closed',
+    abstractUrl: 'https://www.seahq.org/call-for-abstracts',
+    tags: ['education','academic'],
+    color: '#7c3aed',
+    ay: '2026-27',
+    url: 'https://www.seahq.org/upcoming-meetings',
+    focus: 'One-day education meeting ahead of the SAAAPM annual meeting. Curriculum development, simulation, assessment tools, GME, faculty development. Attend this one and submit to SEA Spring 2027 instead.',
+  },
+  {
+    id: 'sta-2027',
+    abstractConfirmedOpenOn: [2026,9,22],
+    abstractDeadlineKind: 'award', // Award eligibility cutoff, not a confirmed submission close.
+    abbr: 'STA',
+    name: 'STA Annual Meeting 2027',
+    society: 'Society for Technology in Anesthesia',
+    start: [2027,1,14],
+    end: [2027,1,17],
+    location: "W Scottsdale, Scottsdale, AZ",
+    abstractDeadline: [2026,11,15],
+    abstractDeadlineText: 'November 15, 2026 (for abstract award eligibility)',
+    abstractStatus: 'open',
+    abstractUrl: 'https://www.stahq.org/events/annual-meeting/call-for-abstracts',
+    tags: ['technology','core'],
+    color: '#059669',
+    ay: '2026-27',
+    url: 'https://www.stahq.org/events/annual-meeting',
+    focus: 'Anesthesia technology, monitoring systems, AI/ML in perioperative care, closed-loop drug delivery, decision support, device innovation. Small, approachable meeting — strong venue for technology-focused resident projects. Decisions emailed by Dec 15, 2026.',
+  },
+  {
+    id: 'csa-winter-2027',
+    abbr: 'CSA Winter',
+    name: 'CSA Winter Conference 2027',
+    society: 'California Society of Anesthesiologists',
+    start: [2027,1,18], end: [2027,1,22],
+    location: 'Westin Maui Resort & Spa, Ka\'anapali, Maui, HI',
+    abstractDeadline: null,
+    abstractDeadlineText: 'No poster session — CME only (early-bird registration Oct 16, 2026)',
+    abstractStatus: 'tbd',
+    abstractUrl: null,
+    tags: ['core','california'],
+    color: '#d97706',
+    ay: '2026-27',
+    url: 'https://csahq.org/events/csa-2027-winter-anesthesia-conference/',
+    focus: 'Five mornings of CME ending by 12:15 PM, afternoons free. Clinical updates plus California regulatory and policy content. CSA\'s poster session lives at the Annual Conference in April, not here.',
+  },
+  {
+    id: 'ccas-2027',
+    abstractConfirmedOpenOn: [2026,9,22],
+    abstractClosesAt: '2026-10-26T12:00:00-04:00', // Noon Eastern Time (EDT).
+    abbr: 'CCAS',
+    name: 'CCAS Annual Meeting 2027',
+    society: 'Congenital Cardiac Anesthesia Society',
+    start: [2027,3,4], end: [2027,3,4],
+    location: 'Atlantis Paradise Island, Nassau, Bahamas',
+    locationNote: 'Day before SPA-AAP — submit to both',
+    abstractDeadline: [2026,10,26],
+    abstractDeadlineText: 'October 26, 2026 (Noon ET)',
+    abstractStatus: 'open',
+    abstractUrl: 'https://ccasociety.org/call-for-abstracts-now-open/',
+    tags: ['cardiac','pediatric'],
+    color: '#dc2626',
+    ay: '2026-27',
+    url: 'https://ccasociety.org/meetings/upcoming/',
+    focus: 'Congenital cardiac anesthesia: CHD physiology, cath lab anesthesia, neonatal cardiac surgery, ECMO, hybrid procedures. Strong case series and outcomes focus. No late submissions accepted.',
+  },
+  {
+    id: 'spa-2027',
+    abstractConfirmedOpenOn: [2026,9,22],
+    abstractClosesAt: '2026-10-26T12:00:00-05:00', // Organizer explicitly specifies EST.
+    abbr: 'SPA-AAP',
+    name: 'SPA-AAP Pediatric Anesthesiology 2027',
+    society: 'Society for Pediatric Anesthesia / American Academy of Pediatrics',
+    start: [2027,3,5], end: [2027,3,7],
+    location: 'Atlantis Paradise Island, Nassau, Bahamas',
+    abstractDeadline: [2026,10,26],
+    abstractDeadlineText: 'October 26, 2026 (Noon EST)',
+    abstractStatus: 'open',
+    abstractUrl: 'https://pedsanesthesia.org/call-for-abstracts-open-now/',
+    tags: ['pediatric'],
+    color: '#f59e0b',
+    ay: '2026-27',
+    url: 'https://pedsanesthesia.org/education-and-meetings/upcoming-meetings/',
+    focus: 'Comprehensive pediatric anesthesia: neonatal/infant anesthesia, congenital anomalies, pediatric critical care, pain in children, rare syndromes. Accepts original research, case reports, and QI. Joint meeting with AAP. No abstracts accepted after the deadline, no exceptions.',
+  },
+  {
+    id: 'aua-2027',
+    abbr: 'AUA',
+    name: 'AUA Annual Meeting 2027',
+    society: 'Association of University Anesthesiologists',
+    start: [2027,4,2],
+    end: [2027,4,4],
+    location: 'TMC3 Collaborative Building (Helix Hall), Houston, TX',
+    locationNote: 'Hosted by McGovern Medical School at UTHealth Houston',
+    abstractDeadline: null,
+    abstractDeadlineText: "Opening planned for September 2026; submission details and deadline not yet posted",
+    abstractStatus: "tbd",
+    abstractUrl: 'https://www.auahq.org/2027-annual-meeting',
+    tags: ['academic','education'],
+    color: '#2563eb',
+    ay: '2026-27',
+    url: 'https://www.auahq.org/2027-annual-meeting',
+    focus: 'Premier academic anesthesiology society. Scientific abstracts only — medically challenging case reports are NOT accepted. Translational science, health services research, medical education. Ideal for residents pursuing academic careers; trainee travel awards available. Registration opens Oct 2026.',
+  },
+  {
+    id: 'sca-2027',
+    abstractOpensOn: [2026,9,15],
+    abstractTimeZone: 'America/New_York',
+    abstractClosesAt: '2026-12-01T23:59:00-05:00',
+    abbr: 'SCA',
+    name: 'SCA Annual Meeting 2027',
+    society: 'Society of Cardiovascular Anesthesiologists',
+    start: [2027,4,8],
+    end: [2027,4,11],
+    location: 'Bellagio, Las Vegas, NV',
+    abstractDeadline: [2026,12,1],
+    abstractDeadlineText: 'December 1, 2026 (11:59 PM EST)',
+    abstractStatus: 'open',
+    abstractUrl: 'https://www.abstractscorecard.com/cfp/submit/login.asp?EventKey=IIFKVPGV',
+    tags: ['cardiac'],
+    color: '#b91c1c',
+    ay: '2026-27',
+    url: "https://scahq.org/upcoming-event/sca-annual-meeting-and-workshops-2027/",
+    focus: 'Cardiovascular anesthesia and perioperative cardiac medicine: TEE, valve surgery, TAVR, VADs, ECMO. Four submission categories including a dedicated Fellow & Resident Complex Case track and an Early Career Investigator Award. Thoracic Anesthesia Symposium runs Apr 8. Decisions end of January 2027.',
+  },
+  {
+    id: 'csa-annual-2027',
+    abstractConfirmedOpenOn: [2026,9,22],
+    abbr: 'CSA Annual',
+    name: 'CSA Annual Conference 2027',
+    society: 'California Society of Anesthesiologists',
+    start: [2027, 4, 8],
+    end: [2027,4,11],
+    location: 'Disneyland Resort, Anaheim, CA',
+    abstractDeadline: [2027,2,8],
+    abstractDeadlineText: 'February 8, 2027',
+    abstractStatus: 'open',
+    abstractUrl: 'https://csahq.org/events/csa-2027-annual-anesthesia-conference-and-board-meeting/',
+    tags: ['core','california'],
+    color: '#d97706',
+    ay: '2026-27',
+    url: 'https://csahq.org/events/csa-2027-annual-anesthesia-conference-and-board-meeting/',
+    focus: 'CSA\'s poster session explicitly invites medical students, residents, fellows and CRNAs: research, case reports, QI projects, and innovative clinical experiences. Posters shown Apr 11 at the Disneyland Hotel. Close to home, low barrier, good first abstract. Presenters must register for the conference.',
+  },
+  {
+    id: 'sea-spring-2027',
+    abstractConfirmedOpenOn: [2026,9,22],
+    abstractClosesAt: '2026-09-30T23:59:00-04:00',
+    abbr: 'SEA Spring',
+    name: 'SEA Spring Meeting 2027',
+    society: 'Society for Education in Anesthesia',
+    start: [2027,4,16], end: [2027,4,18],
+    location: 'Renaissance Minneapolis Hotel, The Depot, Minneapolis, MN',
+    abstractDeadline: [2026,9,30],
+    abstractDeadlineText: 'September 30, 2026 (11:59 PM ET)',
+    abstractStatus: 'open',
+    abstractUrl: 'https://www.abstractscorecard.com/cfp/submit/login.asp?EventKey=DQGIWYZL',
+    tags: ['education','academic'],
+    color: '#6d28d9',
+    ay: '2026-27',
+    url: 'https://www.seahq.org/call-for-abstracts',
+    focus: 'Theme: "Honoring 100 Years of Anesthesia Education: Past, Present & Future." Categories: designed research studies, curriculum in anesthesia education, and Innovative Ideas Idea Lab. 400-word max. Philip Liu Awards ($1,000) and SEAd Sprout trainee awards ($500). Decisions early Nov 2026.',
+  },
+  {
+    id: 'warc-2027',
+    abbr: 'WARC',
+    name: 'WARC 2027',
+    society: 'Western Anesthesia Residents\' Conference — 64th Annual',
+    start: null,
+    end: null,
+    location: "Virginia Mason listed as 2027 host; venue TBD",
+    abstractDeadline: null,
+    abstractDeadlineText: "Dates and abstract deadline not yet confirmed",
+    abstractStatus: 'tbd',
+    abstractUrl: 'https://www.asahq.org/education-and-career/asa-resident-component/meetings-and-events',
+    tags: ['resident','core'],
+    color: '#0d9488',
+    ay: '2026-27',
+    url: 'https://www.asahq.org/education-and-career/asa-resident-component/meetings-and-events',
+    focus: "Resident-focused research and case presentations. The published WARC host rotation lists Virginia Mason for 2027; meeting dates and venue still need confirmation. No placeholder dates are plotted on the calendar.",
+  },
+  {
+    id: 'iars-socca-2027',
+    abstractConfirmedOpenOn: [2026,9,22],
+    abstractClosesAt: '2026-12-06T23:59:00-08:00',
+    abbr: 'IARS / SOCCA',
+    name: 'IARS / SOCCA Annual Meeting 2027',
+    society: 'International Anesthesia Research Society & Society of Critical Care Anesthesiologists',
+    start: [2027,4,30], end: [2027,5,2],
+    location: 'Hilton Chicago, Chicago, IL',
+    abstractDeadline: [2026,12,6],
+    abstractDeadlineText: 'December 6, 2026 (11:59 PM PST)',
+    abstractStatus: 'open',
+    abstractUrl: 'https://meetings.iars.org/abstracts/submissions/',
+    tags: ['core','critical','academic'],
+    color: '#0f766e',
+    ay: '2026-27',
+    url: 'https://meetings.iars.org/',
+    focus: 'Basic and clinical anesthesia research alongside critical care. New for 2027: thirteen expanded subspecialty categories (monitoring/technology through global health and pediatrics). Accepted abstracts published in Anesthesia & Analgesia. Decisions January 2027. IARS Mentored Research Awards available for trainees.',
+  },
+  {
+    id: 'samba-2027',
+    abbr: 'SAMBA',
+    name: 'SAMBA Annual Meeting 2027',
+    society: 'Society for Ambulatory Anesthesia — 42nd Annual',
+    start: [2027,5,6], end: [2027,5,8],
+    location: 'Hyatt Regency Savannah, Savannah, GA',
+    abstractDeadline: null,
+    abstractDeadlineText: 'TBD — check sambahq.org (2026 call closed in February)',
+    abstractStatus: 'tbd',
+    abstractUrl: 'https://www.sambahq.org/events/samba-2027-annual-meeting',
+    tags: ['ambulatory'],
+    color: '#0369a1',
+    ay: '2026-27',
+    url: 'https://www.sambahq.org/events/samba-2027-annual-meeting',
+    focus: 'Ambulatory and outpatient anesthesia: PACU optimization, PONV, same-day surgery outcomes, opioid-free techniques, ERAS for ambulatory surgery. Accepts original research, QI, and case reports.',
+  },
+  {
+    id: 'asra-regional-2027',
+    abbr: 'ASRA Regional',
+    name: 'ASRA Regional & Acute Pain 2027',
+    society: 'American Society of Regional Anesthesia & Pain Medicine — 52nd Annual',
+    start: [2027,5,13], end: [2027,5,15],
+    location: 'Marriott Marquis Houston, Houston, TX',
+    locationNote: 'Moved from spring/Atlanta — now May in Houston',
+    abstractDeadline: null,
+    abstractDeadlineText: 'TBD — typically ~Jan 2027, with a late-breaking round ~Feb',
+    abstractStatus: 'tbd',
+    abstractUrl: 'https://asra.com/events-education/ra-acute-meeting',
+    tags: ['regional'],
+    color: '#be185d',
+    ay: '2026-27',
+    url: 'https://asra.com/events-education/ra-acute-meeting',
+    focus: 'Theme: "Launch Control, We Have Liftoff! Expanding the Horizons of RAAPM." Nerve blocks, ultrasound guidance, ERAS, acute pain service operations, opioid-sparing techniques. Hands-on live ultrasound workshops and PBLDs.',
+  },
+
+  // ─── AY 2027-28 ────────────────────────────────────────────
+  {
+    id: 'spa-fall-2027',
+    abbr: 'SPA Fall',
+    name: 'SPA 41st Annual Meeting 2027',
+    society: 'Society for Pediatric Anesthesia',
+    start: [2027,10,15], end: [2027,10,15],
+    location: 'Boston, MA',
+    locationNote: 'Held just before the ASA Annual Meeting',
+    abstractDeadline: null,
+    abstractDeadlineText: 'TBD — call typically opens spring 2027',
+    abstractStatus: 'tbd',
+    abstractUrl: 'https://pedsanesthesia.org/call-for-abstracts/',
+    tags: ['pediatric'],
+    color: '#f59e0b',
+    ay: '2027-28',
+    url: 'https://pedsanesthesia.org/education-and-meetings/upcoming-meetings/',
+    focus: 'One-day pediatric anesthesia meeting the day before ASA opens in Boston.',
+  },
+  {
+    id: 'asa-2027',
+    abstractOpensOn: [2027,1,5],
+    abbr: 'ASA',
+    name: 'ANESTHESIOLOGY 2027',
+    society: 'American Society of Anesthesiologists',
+    start: [2027,10,15], end: [2027,10,19],
+    location: 'Boston, MA',
+    abstractDeadline: [2027,3,30],
+    abstractDeadlineText: 'Submissions Jan 5 – March 30, 2027',
+    abstractStatus: 'tbd',
+    abstractUrl: 'https://www.asahq.org/annualmeeting/education/submissions',
+    tags: ['core','academic','critical'],
+    color: '#1a3a5c',
+    ay: '2027-28',
+    url: 'https://www.asahq.org/annualmeeting/attend/futuredates',
+    focus: 'ASA flagship annual meeting — all subspecialties. Scientific abstracts are considered for oral, ePoster, or paper poster presentation. Portal opens January 5, 2027 — put the March 30 deadline in your calendar now.',
+  },
+  {
+    id: 'sea-fall-2027',
+    abbr: 'SEA Fall',
+    name: 'SEA Fall Meeting 2027',
+    society: 'Society for Education in Anesthesia',
+    start: [2027,11,4], end: [2027,11,4],
+    location: 'Swissôtel Chicago, Chicago, IL',
+    locationNote: 'Held just before the SAAAPM Annual Meeting',
+    abstractDeadline: null,
+    abstractDeadlineText: 'TBD — check seahq.org',
+    abstractStatus: 'tbd',
+    abstractUrl: 'https://www.seahq.org/call-for-abstracts',
+    tags: ['education','academic'],
+    color: '#7c3aed',
+    ay: '2027-28',
+    url: 'https://www.seahq.org/upcoming-meetings',
+    focus: 'One-day anesthesia education meeting ahead of SAAAPM.',
+  },
+  {
+    id: 'csa-fall-2027',
+    abbr: 'CSA Fall',
+    name: 'CSA Fall Conference 2027',
+    society: 'California Society of Anesthesiologists',
+    start: [2027,11,1], end: [2027,11,5],
+    location: 'Grand Hyatt Kauai Resort & Spa, Kauai, HI',
+    abstractDeadline: null,
+    abstractDeadlineText: 'TBD — check csahq.org',
+    abstractStatus: 'tbd',
+    abstractUrl: null,
+    tags: ['core','california'],
+    color: '#d97706',
+    ay: '2027-28',
+    url: 'https://csahq.org/events/',
+    focus: 'CME-focused clinical updates. California regulatory and policy content. Relevant for UCSF residents planning to practice in California.',
+  },
+  {
+    id: 'asra-pain-2027',
+    abbr: 'ASRA Pain',
+    name: 'ASRA Pain Medicine 2027',
+    society: 'American Society of Regional Anesthesia & Pain Medicine — 26th Annual',
+    start: [2027,11,18], end: [2027,11,20],
+    location: 'Atlanta, GA',
+    abstractDeadline: null,
+    abstractDeadlineText: 'TBD — typically Aug 2027',
+    abstractStatus: 'tbd',
+    abstractUrl: 'https://asra.com/events-education/pain-medicine-meeting',
+    tags: ['regional'],
+    color: '#db2777',
+    ay: '2027-28',
+    url: 'https://asra.com/events-education/pain-medicine-meeting',
+    focus: '26th Annual Pain Medicine Meeting. Interventional pain, chronic pain management, neuromodulation, opioid use disorder, multimodal analgesia.',
+  },
+  {
+    id: 'aua-2028',
+    abbr: 'AUA',
+    name: 'AUA Annual Meeting 2028',
+    society: 'Association of University Anesthesiologists',
+    start: [2028,3,24], end: [2028,3,26],
+    location: 'UCLA Luskin Conference Center, Los Angeles, CA',
+    locationNote: 'Hosted by UCLA David Geffen School of Medicine — closest AUA to UCSF in years',
+    abstractDeadline: null,
+    abstractDeadlineText: 'TBD — typically opens Sept 2027',
+    abstractStatus: 'tbd',
+    abstractUrl: 'https://www.auahq.org/future-meetings',
+    tags: ['academic','education'],
+    color: '#2563eb',
+    ay: '2027-28',
+    url: 'https://www.auahq.org/future-meetings',
+    focus: 'Academic anesthesiology, in California. Scientific abstracts only (no case reports). Worth planning a project around if you are aiming for an academic career.',
+  },
+  {
+    id: 'spa-2028',
+    abbr: 'SPA-AAP',
+    name: 'SPA-AAP Pediatric Anesthesiology 2028',
+    society: 'Society for Pediatric Anesthesia / American Academy of Pediatrics',
+    start: [2028,3,16], end: [2028,3,20],
+    location: 'Gaylord National Resort & Convention Center, Oxon Hill, MD',
+    abstractDeadline: null,
+    abstractDeadlineText: 'TBD — typically late Oct 2027',
+    abstractStatus: 'tbd',
+    abstractUrl: 'https://pedsanesthesia.org/call-for-abstracts/',
+    tags: ['pediatric'],
+    color: '#f59e0b',
+    ay: '2027-28',
+    url: 'https://pedsanesthesia.org/education-and-meetings/upcoming-meetings/',
+    focus: 'Joint SPA-AAP pediatric anesthesiology meeting, just outside Washington, DC.',
+  },
+
+  {
+    id: "csa-fall-2026",
+    abbr: "CSA Fall",
+    name: "CSA Fall Conference 2026",
+    society: "California Society of Anesthesiologists",
+    start: [2026, 11, 9],
+    end: [2026, 11, 13],
+    location: "Fairmont Orchid, Big Island, HI",
+    abstractDeadline: null,
+    abstractDeadlineText: "No abstract call verified — CME conference",
+    abstractStatus: "tbd",
+    abstractUrl: "https://csahq.org/events/",
+    tags: ["core", "california"],
+    color: "#d97706",
+    ay: "2026-27",
+    url: "https://csahq.org/events/",
+    focus: "Clinical continuing education. Check the organizer for presentation opportunities; no abstract call verified.",
+  },
+  {
+    id: "sccm-2027",
+    abbr: "SCCM",
+    name: "SCCM Critical Care Congress 2027",
+    society: "Society of Critical Care Medicine",
+    start: [2027, 3, 14],
+    end: [2027, 3, 16],
+    location: "San Diego Convention Center, San Diego, CA",
+    abstractDeadline: [2026, 9, 3],
+    abstractDeadlineText: "September 3, 2026 (11:59 PM Central)",
+    abstractStatus: "closed",
+    abstractUrl: "https://www.sccm.org/annual-congress/abstracts-and-case-reports",
+    tags: ["critical", "academic"],
+    color: "#b91c1c",
+    ay: "2026-27",
+    url: "https://www.sccm.org/annual-congress/future-congress-dates",
+    focus: "Multidisciplinary critical care research and case reports. Main congress March 14–16; pre-congress education March 12–13. General abstract submissions are closed.",
+  },
+  {
+    id: "soap-2027",
+    abbr: "SOAP",
+    name: "SOAP 59th Annual Meeting 2027",
+    society: "Society for Obstetric Anesthesia and Perinatology",
+    start: [2027, 5, 20],
+    end: [2027, 5, 23],
+    location: "Westin Rancho Mirage Golf Resort & Spa, Rancho Mirage, CA",
+    abstractDeadline: null,
+    abstractDeadlineText: "2027 abstract call and deadline not yet announced",
+    abstractStatus: "tbd",
+    abstractUrl: "https://www.soap.org/future-meetings",
+    tags: ["obstetric", "academic"],
+    color: "#9333ea",
+    ay: "2026-27",
+    url: "https://www.soap.org/future-meetings",
+    focus: "Obstetric anesthesia research and clinical education. The meeting welcomes residents and fellows. Dates and venue are confirmed; 2027 submission details were not found on the official meeting page.",
+  },
+  {
+    id: "csa-summer-2027",
+    abbr: "CSA Summer",
+    name: "CSA Summer Conference 2027",
+    society: "California Society of Anesthesiologists",
+    start: [2027, 7, 12],
+    end: [2027, 7, 16],
+    location: "Four Seasons Resort Oahu at Ko Olina, Oahu, HI",
+    abstractDeadline: null,
+    abstractDeadlineText: "No abstract call verified — CME conference",
+    abstractStatus: "tbd",
+    abstractUrl: "https://csahq.org/events/csa-2027-summer-anesthesia-conference/",
+    tags: ["core", "california"],
+    color: "#d97706",
+    ay: "2027-28",
+    url: "https://csahq.org/events/csa-2027-summer-anesthesia-conference/",
+    focus: "Summer anesthesia continuing education. Dates and venue confirmed; the event page does not list an abstract submission call.",
+  },
+  {
+    id: "esra-2027",
+    abbr: "ESRA",
+    name: "ESRA 44th Annual Congress 2027",
+    society: "European Society of Regional Anaesthesia and Pain Therapy",
+    start: [2027, 9, 1],
+    end: [2027, 9, 4],
+    location: "Bologna, Italy — venue TBD",
+    abstractDeadline: null,
+    abstractDeadlineText: "2027 abstract call and deadline not yet announced",
+    abstractStatus: "tbd",
+    abstractUrl: "https://esraeurope.org/meetings/?meeting_type=esra-events",
+    tags: ["regional"],
+    color: "#be185d",
+    ay: "2027-28",
+    url: "https://esraeurope.org/meetings/?meeting_type=esra-events",
+    focus: "International regional anesthesia and pain meeting. Organizer lists September 1–4 in Bologna; abstract deadlines and submission requirements remain to be announced.",
+  },
+  {
+    id: "painweek-2027",
+    abbr: "PAINWeek",
+    name: "PAINWeek National Conference 2027",
+    society: "PAINWeek",
+    start: [2027, 9, 7],
+    end: [2027, 9, 10],
+    location: "Venue and city not yet confirmed on the 2027 announcement",
+    abstractDeadline: null,
+    abstractDeadlineText: "2027 abstract call and deadline not yet announced",
+    abstractStatus: "tbd",
+    abstractUrl: "https://www.painweek.org/",
+    tags: ["regional"],
+    color: "#db2777",
+    ay: "2027-28",
+    url: "https://www.painweek.org/",
+    focus: "Multidisciplinary pain education. The organizer has announced the 2027 dates; location and 2027 research-poster submission details are not yet confirmed.",
+  },
+  {
+    id: "snacc-2027",
+    abbr: "SNACC",
+    name: "SNACC Annual Meeting 2027",
+    society: "Society for Neuroscience in Anesthesiology and Critical Care",
+    start: [2027, 9, 9],
+    end: [2027, 9, 11],
+    location: "Paradise Point Resort & Spa, San Diego, CA",
+    abstractDeadline: null,
+    abstractDeadlineText: "2027 abstract call and deadline not yet announced",
+    abstractStatus: "tbd",
+    abstractUrl: "https://snacc.org/meetings/annual-meeting/",
+    tags: ["neuro", "critical", "academic"],
+    color: "#6d28d9",
+    ay: "2027-28",
+    url: "https://snacc.org/meetings/future-meetings/",
+    focus: "Neuroanesthesiology, neurocritical care, and perioperative neuroscience. Official future-meeting dates and venue are confirmed; 2027 abstract submission details are not yet announced.",
+  },
+
+  // ─── PAST (AY 2025-26) ─────────────────────────────────────
+  {
+    id: 'warc-2026',
+    abbr: 'WARC',
+    name: 'WARC 2026',
+    society: 'Western Anesthesia Residents\' Conference — 63rd Annual',
+    start: [2026,4,24], end: [2026,4,25],
+    location: 'Kimpton Sawyer Hotel, Sacramento, CA (UC Davis host)',
+    abstractDeadline: [2026,2,15],
+    abstractDeadlineText: '~Feb 2026',
+    abstractStatus: 'closed',
+    abstractUrl: 'https://health.ucdavis.edu/anesthesiology/calendar/warc-2026/warc-2026-abstracts.html',
+    tags: ['resident','core'],
+    color: '#0d9488',
+    ay: 'past',
+    url: 'https://health.ucdavis.edu/anesthesiology/calendar/warc-2026/',
+    focus: 'Resident-only conference: original research, QI, case reports. Rotates among West Coast programs.',
+  },
+  {
+    id: 'iars-socca-2026',
+    abbr: 'IARS / SOCCA',
+    name: 'IARS / SOCCA 2026',
+    society: 'International Anesthesia Research Society & SOCCA',
+    start: [2026,5,1], end: [2026,5,3],
+    location: 'Fairmont The Queen Elizabeth, Montreal, Canada',
+    abstractDeadline: [2025,12,5],
+    abstractDeadlineText: 'Dec 5, 2025 (late-breaking Jan 19, 2026)',
+    abstractStatus: 'closed',
+    abstractUrl: 'https://meetings.iars.org/abstracts/submissions/',
+    tags: ['core','critical','academic'],
+    color: '#0f766e',
+    ay: 'past',
+    url: 'https://meetings.iars.org/',
+    focus: 'Anesthesia research and critical care. Abstract deadline typically early December for a May conference.',
+  },
+  {
+    id: 'aua-2026',
+    abbr: 'AUA',
+    name: 'AUA Annual Meeting 2026',
+    society: 'Association of University Anesthesiologists',
+    start: [2026,3,27], end: [2026,3,29],
+    location: 'University of Washington, Seattle, WA',
+    abstractDeadline: [2025,11,2],
+    abstractDeadlineText: 'November 2, 2025',
+    abstractStatus: 'closed',
+    abstractUrl: 'https://www.auahq.org/',
+    tags: ['academic','education'],
+    color: '#2563eb',
+    ay: 'past',
+    url: 'https://www.auahq.org/',
+    focus: 'Academic anesthesiology. Abstract deadline typically early November for a late March conference.',
+  },
+  {
+    id: 'spa-2026',
+    abbr: 'SPA-AAP',
+    name: 'SPA-AAP Pediatric Anesthesiology 2026',
+    society: 'Society for Pediatric Anesthesia / AAP',
+    start: [2026,3,13], end: [2026,3,15],
+    location: 'Denver, CO',
+    abstractDeadline: [2025,11,17],
+    abstractDeadlineText: 'November 17, 2025',
+    abstractStatus: 'closed',
+    abstractUrl: 'https://pedsanesthesia.org/',
+    tags: ['pediatric'],
+    color: '#f59e0b',
+    ay: 'past',
+    url: 'https://pedsanesthesia.org/',
+    focus: 'Pediatric anesthesia. Abstract deadline typically mid-to-late November for a mid-March conference (2027 moved earlier, to Oct 26).',
+  },
+  {
+    id: 'sca-2026',
+    abbr: 'SCA',
+    name: 'SCA Annual Meeting 2026',
+    society: 'Society of Cardiovascular Anesthesiologists',
+    start: [2026,4,23], end: [2026,4,26],
+    location: 'Nashville, TN',
+    abstractDeadline: [2025,12,1],
+    abstractDeadlineText: 'December 1, 2025',
+    abstractStatus: 'closed',
+    abstractUrl: 'https://scahq.org/meetings-and-events/',
+    tags: ['cardiac'],
+    color: '#b91c1c',
+    ay: 'past',
+    url: 'https://scahq.org/',
+    focus: 'Cardiovascular anesthesia. Abstract deadline is reliably Dec 1 for a spring conference.',
+  },
+  {
+    id: 'asra-regional-2026',
+    abbr: 'ASRA Regional',
+    name: 'ASRA Regional & Acute Pain 2026',
+    society: 'American Society of Regional Anesthesia & Pain Medicine',
+    start: [2026,4,16], end: [2026,4,18],
+    location: 'Sheraton Phoenix Downtown, Phoenix, AZ',
+    abstractDeadline: [2026,1,6],
+    abstractDeadlineText: 'January 6, 2026',
+    abstractStatus: 'closed',
+    abstractUrl: 'https://asra.com/events-education/ra-acute-meeting',
+    tags: ['regional'],
+    color: '#be185d',
+    ay: 'past',
+    url: 'https://asra.com/events-education/ra-acute-meeting',
+    focus: 'Regional anesthesia and acute pain. Abstract deadline early January, late-breaking round in late February.',
+  },
+  {
+    id: 'ccas-2026',
+    abbr: 'CCAS',
+    name: 'CCAS Annual Meeting 2026',
+    society: 'Congenital Cardiac Anesthesia Society',
+    start: [2026,3,12], end: [2026,3,12],
+    location: 'Sheraton Denver Downtown, Denver, CO',
+    abstractDeadline: [2025,11,17],
+    abstractDeadlineText: 'November 17, 2025 (Noon EST)',
+    abstractStatus: 'closed',
+    abstractUrl: 'https://ccasociety.org/',
+    tags: ['cardiac','pediatric'],
+    color: '#dc2626',
+    ay: 'past',
+    url: 'https://ccasociety.org/',
+    focus: 'Congenital cardiac anesthesia. Deadline moved earlier for 2027 (Oct 26, 2026).',
+  },
+  {
+    id: 'csa-2026',
+    abbr: 'CSA Annual',
+    name: 'CSA Annual Conference 2026',
+    society: 'California Society of Anesthesiologists',
+    start: [2026,4,9], end: [2026,4,12],
+    location: 'Disneyland Hotel, Anaheim, CA',
+    abstractDeadline: [2026,2,10],
+    abstractDeadlineText: '~February 10, 2026',
+    abstractStatus: 'closed',
+    abstractUrl: null,
+    tags: ['core','california'],
+    color: '#d97706',
+    ay: 'past',
+    url: 'https://csahq.org/',
+    focus: 'Annual clinical conference for California anesthesiologists, with a trainee-friendly poster session. Abstract deadline early February.',
+  },
+  {
+    id: 'sea-spring-2026',
+    abbr: 'SEA Spring',
+    name: 'SEA Spring Meeting 2026',
+    society: 'Society for Education in Anesthesia',
+    start: [2026,4,24], end: [2026,4,26],
+    location: 'Live! by Loews, St. Louis, MO',
+    abstractDeadline: [2026,1,26],
+    abstractDeadlineText: '~January 26, 2026',
+    abstractStatus: 'closed',
+    abstractUrl: 'https://www.seahq.org/call-for-abstracts',
+    tags: ['education','academic'],
+    color: '#7c3aed',
+    ay: 'past',
+    url: 'https://www.seahq.org/',
+    focus: 'Theme: "Beyond the Anesthesia Machine: Finding Your Professional Purpose." Note the 2027 spring call came much earlier — Sept 30, 2026.',
+  },
+  {
+    id: 'samba-2026',
+    abbr: 'SAMBA',
+    name: 'SAMBA Annual Meeting 2026',
+    society: 'Society for Ambulatory Anesthesia — 41st Annual',
+    start: [2026,5,13], end: [2026,5,16],
+    location: 'Gaylord National Resort, Washington, DC',
+    abstractDeadline: [2026,2,15],
+    abstractDeadlineText: '~Feb 2026',
+    abstractStatus: 'closed',
+    abstractUrl: 'https://www.sambahq.org/',
+    tags: ['ambulatory'],
+    color: '#0369a1',
+    ay: 'past',
+    url: 'https://www.sambahq.org/',
+    focus: 'Ambulatory anesthesia. Co-located with the Ambulatory Surgery Center Association Annual Meeting.',
+  },
+];
+
+// ══════════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════════
+let TODAY = new Date(); // Refreshed while the page is open.
+let statusNow = new Date();
+
+function mkDate(arr) {
+  if (!arr) return null;
+  return new Date(arr[0], arr[1]-1, arr[2]);
+}
+
+function fmtDate(arr) {
+  if (!arr) return '';
+  const d = mkDate(arr);
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
+function fmtRange(c) {
+  if (!c.start || !c.end) return 'Dates TBD';
+  const s = mkDate(c.start), e = mkDate(c.end);
+  if (s.toDateString() === e.toDateString()) return fmtDate(c.start);
+  if (s.getFullYear() === e.getFullYear() && s.getMonth() === e.getMonth())
+    return s.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + '–' + e.getDate() + ', ' + e.getFullYear();
+  return fmtDate(c.start) + ' – ' + fmtDate(c.end);
+}
+
+function tagHtml(tags) {
+  return tags.map(t => `<span class="tag tag-${t}">${t === 'core' ? 'General' : t === 'california' ? 'California' : t.charAt(0).toUpperCase()+t.slice(1)}</span>`).join('');
+}
+
+// Date-only schedules use the named zone; exact timestamps are independent of the viewer's zone.
+function dateKey(arr) {
+  return arr[0] * 10000 + arr[1] * 100 + arr[2];
+}
+
+function zonedDateKey(now, timeZone = 'America/Los_Angeles') {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone, year: 'numeric', month: '2-digit', day: '2-digit'
+  }).formatToParts(now);
+  const values = Object.fromEntries(parts.map(p => [p.type, p.value]));
+  return Number(values.year + values.month + values.day);
+}
+
+function deadlinePassed(c, now) {
+  if (c.abstractClosesAt) return now >= new Date(c.abstractClosesAt);
+  // Without a published time, keep the call open through the listed date in the default zone.
+  return c.abstractDeadline && zonedDateKey(now, c.abstractTimeZone) > dateKey(c.abstractDeadline);
+}
+
+function getAbstractStatus(c, now = statusNow) {
+  if (c.abstractStatus === 'closed') return 'closed';
+  if (c.end && zonedDateKey(now, c.abstractTimeZone) > dateKey(c.end)) return 'closed';
+  if (deadlinePassed(c, now)) {
+    // An award cutoff does not prove that general submissions have closed.
+    return c.abstractDeadlineKind === 'award' ? 'tbd' : 'closed';
+  }
+  if (c.abstractOpensAt) return now >= new Date(c.abstractOpensAt) ? 'open' : 'upcoming';
+  if (c.abstractOpensOn) return zonedDateKey(now, c.abstractTimeZone) >= dateKey(c.abstractOpensOn) ? 'open' : 'upcoming';
+  if (c.abstractStatus === 'open' && c.abstractConfirmedOpenOn &&
+      zonedDateKey(now, c.abstractTimeZone) >= dateKey(c.abstractConfirmedOpenOn)) return 'open';
+  // A future deadline or estimated opening month alone does not establish an open call.
+  return 'tbd';
+}
+
+function deadlineBadgeHtml(c) {
+  if (getAbstractStatus(c) === 'upcoming')
+    return `<span class="deadline-badge tbd">NOT YET OPEN — ${c.abstractDeadlineText}</span>`;
+  if (c.abstractDeadlineKind === 'award' && getAbstractStatus(c) === 'tbd' && deadlinePassed(c, statusNow))
+    return `<span class="deadline-badge tbd">VERIFY — Award deadline passed; check general submissions</span>`;
+  if (getAbstractStatus(c) === 'open')
+    return `<span class="deadline-badge open"><span class="dot"></span> OPEN — ${c.abstractDeadlineText}</span>`;
+  if (getAbstractStatus(c) === 'closed')
+    return `<span class="deadline-badge closed">CLOSED — was ${c.abstractDeadlineText}</span>`;
+  return `<span class="deadline-badge tbd">TBD — ${c.abstractDeadlineText}</span>`;
+}
+
+function cardFooterLinks(c) {
+  let html = `<a href="${c.url}" class="link-btn primary" target="_blank">Conference Site</a>`;
+  if (c.abstractUrl && getAbstractStatus(c) === 'open')
+    html += `<a href="${c.abstractUrl}" class="link-btn open-abstract" target="_blank">&#x270D; Submit Abstract (OPEN)</a>`;
+  else if (c.abstractUrl && getAbstractStatus(c) !== 'open')
+    html += `<a href="${c.abstractUrl}" class="link-btn secondary" target="_blank">Abstract Info</a>`;
+  return html;
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER CARD
+// ══════════════════════════════════════════════════════════════
+function renderCard(c) {
+  const isPast = c.ay === 'past';
+  const pastTag = isPast ? `<span style="font-size:.68rem;color:#9ca3af;"> [PAST]</span>` : '';
+  const locationNote = c.locationNote ? `<div style="font-size:.72rem;color:var(--text-muted);margin-top:-.25rem;padding-left:85px;">${c.locationNote}</div>` : '';
+
+  return `
+  <div class="conf-card${isPast ? ' past' : ''}"
+       data-tags="${c.tags.join(' ')}"
+       data-abstract="${getAbstractStatus(c)}"
+       data-ay="${c.ay}"
+       id="card-${c.id}">
+    <div class="card-header">
+      <div class="card-badge" style="background:${c.color};">${c.abbr.replace('/','/\n').replace(' ','\n')}</div>
+      <div class="card-title-block">
+        <div class="card-abbr">${c.name}${pastTag}</div>
+        <div class="card-society">${c.society}</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-row"><span class="info-label">Dates</span><span class="info-value">${fmtRange(c)}</span></div>
+      <div class="info-row"><span class="info-label">Location</span><span class="info-value">${c.location}</span></div>
+      ${locationNote}
+      <div class="info-row" style="align-items:center;">
+        <span class="info-label">Abstract</span>
+        ${deadlineBadgeHtml(c)}
+      </div>
+      <div class="focus-text">${c.focus}</div>
+    </div>
+    <div class="card-tags">${tagHtml(c.tags)}</div>
+    <div class="card-footer">${cardFooterLinks(c)}</div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER GRIDS
+// ══════════════════════════════════════════════════════════════
+function renderGrids() {
+  const groups = { '2026-27': [], '2027-28': [], 'past': [] };
+  CONFERENCES.forEach(c => groups[c.ay].push(c));
+  Object.values(groups).forEach(group => group.sort((a,b) => (mkDate(a.start)?.getTime() ?? Infinity) - (mkDate(b.start)?.getTime() ?? Infinity)));
+
+  document.getElementById('grid-2627').innerHTML = groups['2026-27'].map(renderCard).join('');
+  document.getElementById('grid-2728').innerHTML = groups['2027-28'].map(renderCard).join('');
+  document.getElementById('grid-past').innerHTML  = groups['past'].map(renderCard).join('');
+  updateCounts();
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER LIST BY DATE
+// ══════════════════════════════════════════════════════════════
+function renderList() {
+  const ayOrder = {past: 0, '2026-27': 1, '2027-28': 2};
+  const sorted = [...CONFERENCES].sort((a,b) => ayOrder[a.ay] - ayOrder[b.ay] ||
+    (mkDate(a.start)?.getTime() ?? Infinity) - (mkDate(b.start)?.getTime() ?? Infinity));
+  let html = '';
+  let lastAY = null;
+  const ayLabels = { '2026-27':'Academic Year 2026–27 (July 2026 – June 2027)', '2027-28':'Academic Year 2027–28 (July 2027+)', 'past':'Past Cycle — AY 2025–26' };
+
+  sorted.forEach(c => {
+    if (c.ay !== lastAY) {
+      html += `<tr class="list-section-header" data-ay="${c.ay}"><td colspan="7">${ayLabels[c.ay]}</td></tr>`;
+      lastAY = c.ay;
+    }
+    const isPast = c.ay === 'past';
+    let absHtml;
+    if (getAbstractStatus(c) === 'open')
+      absHtml = `<span class="deadline-badge open" style="font-size:.7rem;padding:.15rem .45rem;"><span class="dot"></span> OPEN</span>`;
+    else if (getAbstractStatus(c) === 'closed')
+      absHtml = `<span class="deadline-badge closed" style="font-size:.7rem;padding:.15rem .45rem;">CLOSED</span>`;
+    else
+      absHtml = `<span class="deadline-badge tbd" style="font-size:.7rem;padding:.15rem .45rem;">${getAbstractStatus(c) === 'upcoming' ? 'NOT YET OPEN' : 'TBD'}</span>`;
+
+    let linksHtml = `<a href="${c.url}" class="primary" target="_blank">Site</a>`;
+    if (c.abstractUrl && getAbstractStatus(c) === 'open')
+      linksHtml += `<a href="${c.abstractUrl}" class="abstract-open" target="_blank">Submit</a>`;
+    else if (c.abstractUrl)
+      linksHtml += `<a href="${c.abstractUrl}" style="font-size:.72rem;padding:.18rem .5rem;border-radius:4px;background:var(--slate-light);color:var(--slate);font-weight:600;" target="_blank">Abstract</a>`;
+
+    html += `
+    <tr class="${isPast ? 'list-past' : ''}"
+        data-tags="${c.tags.join(' ')}"
+        data-abstract="${getAbstractStatus(c)}"
+        data-ay="${c.ay}">
+      <td>
+        <div class="list-date">${fmtRange(c)}</div>
+        <small>${c.abstractDeadlineText ? 'Abstract: '+c.abstractDeadlineText : ''}</small>
+      </td>
+      <td><span class="list-badge" style="background:${c.color};">${c.abbr}</span></td>
+      <td style="font-size:.8rem;font-weight:600;color:var(--text);">${c.name}</td>
+      <td class="list-location">${c.location}</td>
+      <td>${absHtml}</td>
+      <td class="list-tags">${tagHtml(c.tags)}</td>
+      <td class="list-links">${linksHtml}</td>
+    </tr>`;
+  });
+  document.getElementById('list-tbody').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER SIDEBAR CALENDAR
+// ══════════════════════════════════════════════════════════════
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAY_LABELS  = ['S','M','T','W','T','F','S'];
+
+// Include conferences and abstract deadlines within the displayed date range.
+const CAL_START = new Date(2026, 6, 1);
+const CAL_END = new Date(2027, 8, 30);
+const CAL_CONFS = CONFERENCES.filter(c => {
+  const deadline = mkDate(c.abstractDeadline);
+  return (c.start && c.end && mkDate(c.start) <= CAL_END && mkDate(c.end) >= CAL_START) ||
+    (deadline && deadline >= CAL_START && deadline <= CAL_END);
+});
+
+function renderCalendar() {
+  // Jul 2026 through Sep 2027, inclusive.
+  const months = [];
+  for (let date = new Date(CAL_START); date <= CAL_END; date.setMonth(date.getMonth() + 1)) {
+    months.push([date.getFullYear(), date.getMonth()]);
+  }
+
+  let html = '';
+  months.forEach(([yr, mo]) => {
+    html += renderMonth(yr, mo);
+  });
+  document.getElementById('sidebar-calendar').innerHTML = html;
+  renderLegend();
+}
+
+function renderMonth(yr, mo) {
+  const firstDay = new Date(yr, mo, 1).getDay();
+  const daysInMonth = new Date(yr, mo+1, 0).getDate();
+
+  // Build day → conferences map
+  const dayConfs = {};    // day → [conf, ...]
+  const dayDeadlines = {};// day → [conf, ...]
+
+  CAL_CONFS.forEach(c => {
+    const s = mkDate(c.start), e = mkDate(c.end);
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dt = new Date(yr, mo, d);
+      if (s && e && dt >= s && dt <= e) {
+        if (!dayConfs[d]) dayConfs[d] = [];
+        dayConfs[d].push(c);
+      }
+      if (c.abstractDeadline) {
+        const dl = mkDate(c.abstractDeadline);
+        if (dl.getFullYear() === yr && dl.getMonth() === mo && dl.getDate() === d) {
+          if (!dayDeadlines[d]) dayDeadlines[d] = [];
+          dayDeadlines[d].push(c);
+        }
+      }
+    }
+  });
+
+  let html = `<div class="mini-cal">`;
+  html += `<div class="mini-cal-header">${MONTH_NAMES[mo]} ${yr}</div>`;
+  html += `<div class="mini-cal-grid">`;
+  DAY_LABELS.forEach(l => html += `<span class="day-label">${l}</span>`);
+
+  // Empty leading cells
+  for (let i = 0; i < firstDay; i++) html += `<span class="day-cell empty">·</span>`;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const confs = dayConfs[d] || [];
+    const deadlines = dayDeadlines[d] || [];
+    const isToday = yr === TODAY.getFullYear() && mo === TODAY.getMonth() && d === TODAY.getDate();
+
+    let cls = 'day-cell';
+    let style = '';
+    let title = '';
+
+    if (confs.length > 0) {
+      cls += ' has-conf';
+      const col = confs[0].color;
+      style = `background:${col};color:white;`;
+      title = confs.map(c => c.abbr).join(', ');
+    }
+    if (deadlines.length > 0) {
+      cls += ' has-deadline';
+      const dl = deadlines.map(c => c.abbr + ' abstract due').join(', ');
+      title = title ? title + ' | ' + dl : dl;
+    }
+    if (isToday) cls += ' today';
+
+    const confIds = confs.map(c => c.id).join(',');
+    html += `<span class="${cls}" style="${style}"${title ? ` title="${title}"` : ''}${confIds ? ` data-conf-ids="${confIds}"` : ''}>${d}</span>`;
+  }
+
+  html += `</div></div>`;
+  return html;
+}
+
+function renderLegend() {
+  let html = `<div class="legend-title">Conferences</div>`;
+  CAL_CONFS.forEach(c => {
+    html += `<div class="legend-item"><span class="legend-swatch" style="background:${c.color};"></span>${c.abbr}</div>`;
+  });
+  html += `<div class="legend-deadline"><span class="legend-dot"></span>Abstract deadline</div>`;
+  document.getElementById('sidebar-legend').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════
+// ALERT BANNER
+// ══════════════════════════════════════════════════════════════
+function renderAlerts() {
+  const openConfs = CONFERENCES.filter(c => getAbstractStatus(c) === 'open')
+    .sort((x,y) => {                       // soonest deadline first; undated last
+      const dx = mkDate(x.abstractDeadline), dy = mkDate(y.abstractDeadline);
+      if (!dx) return 1;
+      if (!dy) return -1;
+      return dx - dy;
+    });
+  if (openConfs.length === 0) {
+    document.getElementById('alert-banner').style.display = 'none';
+    document.getElementById('alert-items').innerHTML = '';
+    return;
+  }
+  document.getElementById('alert-banner').style.display = '';
+  const html = openConfs.map(c =>
+    `<div class="alert-chip"><span class="dot"></span><strong>${c.abbr}</strong> — Deadline <strong>${c.abstractDeadlineText}</strong> · ${c.location.split(',')[0]}, ${fmtRange(c)}</div>`
+  ).join('');
+  document.getElementById('alert-items').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════
+// FILTER
+// ══════════════════════════════════════════════════════════════
+let currentFilter = 'all';
+let currentView = 'grid';
+
+function applyFilter(filter) {
+  currentFilter = filter;
+  // Grid cards
+  document.querySelectorAll('.conf-card').forEach(card => {
+    const tags = (card.dataset.tags || '').split(' ');
+    const abs  = card.dataset.abstract || '';
+    let show = true;
+    if (filter === 'open') show = abs === 'open';
+    else if (filter !== 'all') show = tags.includes(filter);
+    card.classList.toggle('hidden', !show);
+  });
+  // List rows
+  document.querySelectorAll('#list-tbody tr').forEach(row => {
+    if (row.classList.contains('list-section-header')) return; // handled below
+    const tags = (row.dataset.tags || '').split(' ');
+    const abs  = row.dataset.abstract || '';
+    let show = true;
+    if (filter === 'open') show = abs === 'open';
+    else if (filter !== 'all') show = tags.includes(filter);
+    row.classList.toggle('list-hidden', !show);
+  });
+  // Hide section headers that have no visible rows
+  document.querySelectorAll('#list-tbody tr.list-section-header').forEach(header => {
+    const ay = header.dataset.ay;
+    const hasVisible = [...document.querySelectorAll(`#list-tbody tr[data-ay="${ay}"]`)]
+      .some(r => !r.classList.contains('list-hidden') && !r.classList.contains('list-section-header'));
+    header.classList.toggle('list-hidden', !hasVisible);
+  });
+  updateCounts();
+}
+
+// ══════════════════════════════════════════════════════════════
+// COUNTS
+// ══════════════════════════════════════════════════════════════
+function updateCounts() {
+  [['section-2627','grid-2627'],['section-2728','grid-2728'],['section-past','grid-past']].forEach(([secId, gridId]) => {
+    const sec = document.getElementById(secId);
+    if (!sec) return;
+    const visible = sec.querySelectorAll('.conf-card:not(.hidden)').length;
+    const el = sec.querySelector('.year-count');
+    if (el) el.textContent = visible + ' conference' + (visible !== 1 ? 's' : '');
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// VIEW TOGGLE
+// ══════════════════════════════════════════════════════════════
+document.getElementById('btn-grid').addEventListener('click', () => {
+  currentView = 'grid';
+  document.getElementById('btn-grid').classList.add('active');
+  document.getElementById('btn-list').classList.remove('active');
+  document.getElementById('grid-view').classList.remove('hidden');
+  document.getElementById('list-view').classList.remove('active');
+});
+
+document.getElementById('btn-list').addEventListener('click', () => {
+  currentView = 'list';
+  document.getElementById('btn-list').classList.add('active');
+  document.getElementById('btn-grid').classList.remove('active');
+  document.getElementById('grid-view').classList.add('hidden');
+  document.getElementById('list-view').classList.add('active');
+  applyFilter(currentFilter); // re-apply current filter to list
+});
+
+// ══════════════════════════════════════════════════════════════
+// FILTER BUTTONS
+// ══════════════════════════════════════════════════════════════
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilter(btn.dataset.filter);
+  });
+});
+
+// ══════════════════════════════════════════════════════════════
+// CALENDAR CLICK → SCROLL TO CARD
+// ══════════════════════════════════════════════════════════════
+function scrollToCard(id) {
+  // Switch to grid view if needed
+  if (currentView !== 'grid') {
+    document.getElementById('btn-grid').click();
+  }
+  // Clear any active filter that might hide the card
+  const card = document.getElementById('card-' + id);
+  if (!card) return;
+  if (card.classList.contains('hidden')) {
+    document.querySelector('.filter-btn[data-filter="all"]').click();
+  }
+  // Scroll card into view
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // Flash animation
+  card.classList.remove('card-flash');
+  void card.offsetWidth; // force reflow to restart animation
+  card.classList.add('card-flash');
+  card.addEventListener('animationend', () => card.classList.remove('card-flash'), { once: true });
+}
+
+document.getElementById('sidebar-calendar').addEventListener('click', e => {
+  const cell = e.target.closest('[data-conf-ids]');
+  if (!cell) return;
+  const ids = cell.dataset.confIds.split(',');
+  scrollToCard(ids[0]); // scroll to first conf on that date
+});
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+let lastStatusSignature = '';
+function refreshTimeSensitiveUI(now = new Date()) {
+  statusNow = now;
+  TODAY = now;
+  const signature = now.toDateString() + '|' + CONFERENCES.map(c => getAbstractStatus(c, now)).join(',');
+  if (signature === lastStatusSignature) return;
+  lastStatusSignature = signature;
+  renderAlerts();
+  renderGrids();
+  renderList();
+  renderCalendar();
+  applyFilter(currentFilter); // Preserve the selected filter and view after a status changes.
+}
+
+refreshTimeSensitiveUI();
+setInterval(() => refreshTimeSensitiveUI(), 30000);
+window.addEventListener('focus', () => refreshTimeSensitiveUI());
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) refreshTimeSensitiveUI();
+});
+</script>
+
+</body>
+</html>
