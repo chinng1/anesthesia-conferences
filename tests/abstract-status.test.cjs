@@ -108,3 +108,17 @@ test('Open Now filter uses the derived status on cards and list rows', () => {
   assert.deepEqual(rows.filter(r => !r.classList.hidden).map(r => r.dataset.abstract), ['open', 'open']);
   assert.deepEqual(rows.filter(r => !r.classList['list-hidden']).map(r => r.dataset.abstract), ['open', 'open']);
 });
+
+test('sidebar calendar rolls 18 months from the current month', () => {
+  const { context } = load();
+  const now = new Date(2026, 10, 13); // Nov 13, 2026, local time
+  const { start, end } = context.calendarRange(now);
+  assert.equal(start.toDateString(), new Date(2026, 10, 1).toDateString());
+  assert.equal(end.toDateString(), new Date(2028, 3, 30).toDateString());
+  const ids = context.calendarConferences(now).map(c => c.id);
+  assert.ok(ids.includes('aua-2028'), 'March 2028 meeting is inside the range');
+  assert.ok(!ids.includes('asa-2026'), 'October 2026 meeting has rolled off');
+  const later = context.calendarRange(new Date(2027, 0, 31));
+  assert.equal(later.start.toDateString(), new Date(2027, 0, 1).toDateString());
+  assert.equal(later.end.toDateString(), new Date(2028, 5, 30).toDateString());
+});

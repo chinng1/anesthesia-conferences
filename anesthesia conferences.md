@@ -106,7 +106,7 @@ Checked November 13, 2026. TBD means the organizer has not provided confirmed su
 - Status badges: OPEN (green), NOT YET OPEN / TBD (blue), CLOSED (gray). An expired award-only cutoff asks readers to verify general submissions.
 - Past cycle section for year-ahead planning
 - Print-friendly CSS for PDF export
-- **Left sidebar calendar** — mini monthly calendars from Jul 2026 through Sep 2027; includes conferences and dated abstract deadlines in that range across academic years; conference dates filled in conference color, abstract deadline days marked with a red dot; color legend below
+- **Left sidebar calendar** — rolling: mini monthly calendars start at the viewer's current month and show 18 months (`CAL_MONTHS`), so the range never needs manual edits; includes conferences and dated abstract deadlines in that range across academic years; conference dates filled in conference color, abstract deadline days marked with a red dot; color legend below. The monthly check warns when the latest listed meeting is under 12 months away, meaning the next academic year needs adding.
 - **Clickable calendar dates** — clicking a highlighted date switches to Cards view, scrolls to the conference card, and flashes a 3.5s teal glow highlight around it; active filters that would hide the card are cleared automatically
 - **List by Date view** — toggle between Cards and List views; list is sorted chronologically with academic year section headers, all filters apply to both views
 - **Single JS data source** — all conference data lives in one `CONFERENCES` array; calendar, list, and cards all render from it so nothing gets out of sync

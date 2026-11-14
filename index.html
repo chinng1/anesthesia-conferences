@@ -342,7 +342,7 @@
 
   <!-- ══ SIDEBAR CALENDAR ══ -->
   <aside class="sidebar">
-    <div class="sidebar-title">Jul 2026–Sep 2027 Calendar</div>
+    <div class="sidebar-title" id="calendar-title">Calendar</div>
     <div id="sidebar-calendar"></div>
     <div class="sidebar-legend" id="sidebar-legend"></div>
   </aside>
@@ -1370,21 +1370,36 @@ function renderList() {
 const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const DAY_LABELS  = ['S','M','T','W','T','F','S'];
 
-// Include conferences and abstract deadlines within the displayed date range.
-const CAL_START = new Date(2026, 6, 1);
-const CAL_END = new Date(2027, 8, 30);
-const CAL_CONFS = CONFERENCES.filter(c => {
-  const deadline = mkDate(c.abstractDeadline);
-  return (c.start && c.end && mkDate(c.start) <= CAL_END && mkDate(c.end) >= CAL_START) ||
-    (deadline && deadline >= CAL_START && deadline <= CAL_END);
-});
+// The calendar rolls forward: it starts at the viewer's current month and shows
+// CAL_MONTHS months, so it never needs manual date edits.
+const CAL_MONTHS = 18;
+let CAL_CONFS = [];
+
+function calendarRange(now = TODAY) {
+  const start = new Date(now.getFullYear(), now.getMonth(), 1);
+  const end = new Date(now.getFullYear(), now.getMonth() + CAL_MONTHS, 0); // last day of final month
+  return { start, end };
+}
+
+// Conferences and abstract deadlines that fall within the displayed range.
+function calendarConferences(now = TODAY) {
+  const { start, end } = calendarRange(now);
+  return CONFERENCES.filter(c => {
+    const deadline = mkDate(c.abstractDeadline);
+    return (c.start && mkDate(c.start) <= end && mkDate(c.end || c.start) >= start) ||
+      (deadline && deadline >= start && deadline <= end);
+  });
+}
 
 function renderCalendar() {
-  // Jul 2026 through Sep 2027, inclusive.
+  const { start, end } = calendarRange();
+  CAL_CONFS = calendarConferences();
   const months = [];
-  for (let date = new Date(CAL_START); date <= CAL_END; date.setMonth(date.getMonth() + 1)) {
+  for (let date = new Date(start); date <= end; date.setMonth(date.getMonth() + 1)) {
     months.push([date.getFullYear(), date.getMonth()]);
   }
+  document.getElementById('calendar-title').textContent =
+    `${MONTH_NAMES[start.getMonth()]} ${start.getFullYear()}–${MONTH_NAMES[end.getMonth()]} ${end.getFullYear()} Calendar`;
 
   let html = '';
   months.forEach(([yr, mo]) => {

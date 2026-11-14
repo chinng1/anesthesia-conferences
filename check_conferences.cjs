@@ -18,7 +18,7 @@ const vm = require('node:vm');
 const SOON_DAYS = 42;           // "closing soon" means under 6 weeks out
 const CHECK_CALL_MONTHS = 9;    // TBD meetings starting within this many months: look for a call
 const STALE_DATA_DAYS = 90;     // warn if "Last updated" is older than this
-const CALENDAR_WARN_DAYS = 90;  // warn when the sidebar calendar is about to run out
+const COVERAGE_WARN_MONTHS = 12; // warn when the latest listed meeting is less than this far out
 const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 ' +
   '(KHTML, like Gecko) Chrome/130.0 Safari/537.36';
 const BLOCKED_CODES = new Set([401, 403, 429]); // many society sites block bots but are fine
@@ -55,7 +55,6 @@ function loadPage(htmlPath) {
   const updated = (html.match(/Last updated:\s*([A-Z][a-z]+ \d{1,2}, \d{4})/) || [])[1] || null;
   return {
     conferences: vm.runInContext('CONFERENCES', context),
-    calEnd: vm.runInContext('typeof CAL_END !== "undefined" ? CAL_END : null', context),
     status: (c, now) => context.getAbstractStatus(c, now),
     deadlinePassed: (c, now) => Boolean(context.deadlinePassed(c, now)),
     updated
@@ -157,10 +156,13 @@ async function buildReport(page, now, checkLinks) {
     if (age > STALE_DATA_DAYS) lines.push(`> ⚠️ The data was last updated ${age} days ago. ` +
       'Consider a full review against the society websites.', '');
   }
-  if (page.calEnd) {
-    const left = days(page.calEnd, today);
-    if (left <= CALENDAR_WARN_DAYS) lines.push(`> ⚠️ The sidebar calendar ends ${fmt(page.calEnd)} ` +
-      `(${left} days away). Extend CAL_START/CAL_END and add the next academic year.`, '');
+  // The sidebar calendar rolls 18 months ahead on its own; the data has to keep up with it.
+  const starts = current.map(c => ymd(c.start)).filter(Boolean);
+  if (starts.length) {
+    const latest = new Date(Math.max(...starts));
+    const monthsOut = days(latest, today) / 30.4;
+    if (monthsOut < COVERAGE_WARN_MONTHS) lines.push(`> ⚠️ The latest listed meeting starts ${fmt(latest)} ` +
+      `(~${Math.max(0, Math.round(monthsOut))} months away). Add the next academic year's meetings.`, '');
   }
 
   const openNow = current.filter(c => page.status(c, now) === 'open');
