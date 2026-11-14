@@ -3,7 +3,7 @@
 ## Overview
 Static HTML website listing anesthesia conferences for UCSF residents to apply/present at.
 
-**File:** `anesthesia conferences 2026-2027.html` (self-contained, no dependencies)
+**File:** `index.html` (self-contained, no dependencies)
 **Last updated:** September 22, 2026
 **Compiled by:** Gregory A. Chinn, MD PhD — UCSF Anesthesia & Perioperative Care
 
