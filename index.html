@@ -1475,9 +1475,16 @@ function renderMonth(yr, mo) {
 
 function renderLegend() {
   let html = `<div class="legend-title">Conferences</div>`;
-  CAL_CONFS.forEach(c => {
-    html += `<div class="legend-item"><span class="legend-swatch" style="background:${c.color};"></span>${c.abbr}</div>`;
-  });
+  // One entry per society color, in date order (a range can hold two years of the same meeting).
+  const seen = new Set();
+  [...CAL_CONFS]
+    .sort((a, b) => (mkDate(a.start)?.getTime() ?? Infinity) - (mkDate(b.start)?.getTime() ?? Infinity))
+    .forEach(c => {
+      const key = c.abbr + '|' + c.color;
+      if (seen.has(key)) return;
+      seen.add(key);
+      html += `<div class="legend-item"><span class="legend-swatch" style="background:${c.color};"></span>${c.abbr}</div>`;
+    });
   html += `<div class="legend-deadline"><span class="legend-dot"></span>Abstract deadline</div>`;
   document.getElementById('sidebar-legend').innerHTML = html;
 }
