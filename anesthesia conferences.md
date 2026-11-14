@@ -105,8 +105,9 @@ Checked September 22, 2026. TBD means the organizer has not provided confirmed s
 
 ## Maintenance
 - **Recommended update cadence:** Each July 1, plus a September check (many fall deadlines land Sept–Dec)
-- **How to update:** Ask Claude to re-search society websites and refresh the HTML file
-- **Hosting:** Drag `conference website/` folder to netlify.com/drop for a free shareable link
+- **Live site:** https://chinng1.github.io/anesthesia-conferences/ (GitHub Pages, repo `chinng1/anesthesia-conferences`). Every push to `main` republishes it within about a minute.
+- **Monthly check:** `.github/workflows/monthly-check.yml` runs on the 1st of each month (7–8 AM Pacific). It runs the tests and `check_conferences.cjs`, then opens a GitHub issue listing open calls, deadlines within 6 weeks, finished meetings, TBD calls for meetings within 9 months, and broken links. It never edits `index.html`. Run it any time from the repo's Actions tab, or locally with `node check_conferences.cjs` (`--no-links` for a fast run, `--today YYYY-MM-DD` to preview a date).
+- **How to update:** Ask Claude to work through the latest check issue and re-search society websites, edit `index.html`, update "Last updated", then commit and push.
 
 ### Automatic status maintenance
 

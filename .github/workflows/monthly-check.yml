@@ -1,0 +1,31 @@
+name: Monthly conference check
+
+# Checks every conference link and flags deadlines, open calls, and TBD calls that
+# need attention, then opens a GitHub issue with the report (GitHub emails you about
+# new issues). It never edits index.html.
+
+on:
+  schedule:
+    - cron: '0 15 1 * *'   # 1st of every month, 15:00 UTC (7-8 am Pacific)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run tests
+        run: node --test tests/abstract-status.test.cjs
+      - name: Run check
+        run: node check_conferences.cjs --out report.md | tail -1
+      - name: Open issue with the report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue create --title "Conference check — $(date -u +'%B %Y')" --body-file report.md
