@@ -4,7 +4,7 @@
 Static HTML website listing anesthesia conferences for UCSF residents to apply/present at.
 
 **File:** `index.html` (self-contained, no dependencies)
-**Last updated:** September 22, 2026
+**Last updated:** November 13, 2026
 **Compiled by:** Gregory A. Chinn, MD PhD — UCSF Anesthesia & Perioperative Care
 
 ---
@@ -19,24 +19,18 @@ Static HTML website listing anesthesia conferences for UCSF residents to apply/p
 
 ## Conferences Included
 
-Checked September 22, 2026. TBD means the organizer has not provided confirmed submission details. Existing later meetings remain available for planning.
+Checked November 13, 2026. TBD means the organizer has not provided confirmed submission details. Existing later meetings remain available for planning.
 
 ### AY 2026–27
 
 | Conference | Dates | Location | Abstract Deadline | Status |
 |---|---|---|---|---|
-| [SPA 40th Annual Meeting 2026](https://pedsanesthesia.org/education-and-meetings/upcoming-meetings/) | Oct 16, 2026 | Hilton San Diego Bayfront, San Diego, CA | Closed for 2026 — call opens ~spring for the fall meeting | CLOSED |
-| [TASCON 2026](https://www.tashq.org/events) | Oct 16, 2026 | San Diego, CA | June 28, 2026 | CLOSED |
-| [ANESTHESIOLOGY 2026](https://www.asahq.org/meetings/anesthesiology-annual-meeting) | Oct 16–20, 2026 | San Diego Convention Center, CA | March 31, 2026 | CLOSED |
-| [ASRA Pain Medicine 2026](https://asra.com/events-education/pain-medicine-meeting) | Nov 5–7, 2026 | Tampa, FL | August 7, 2026 | CLOSED |
-| [CSA Fall Conference 2026](https://csahq.org/events/) | Nov 9–13, 2026 | Fairmont Orchid, Big Island, HI | No abstract call verified — CME conference | TBD |
-| [SEA Fall Meeting 2026](https://www.seahq.org/upcoming-meetings) | Nov 12, 2026 | Swissôtel Chicago, Chicago, IL | Closed — SEA's open call is now for Spring 2027 | CLOSED |
 | [STA Annual Meeting 2027](https://www.stahq.org/events/annual-meeting) | Jan 14–17, 2027 | W Scottsdale, Scottsdale, AZ | November 15, 2026 (for abstract award eligibility) | OPEN |
 | [CSA Winter Conference 2027](https://csahq.org/events/csa-2027-winter-anesthesia-conference/) | Jan 18–22, 2027 | Westin Maui Resort & Spa, Ka'anapali, Maui, HI | No poster session — CME only (early-bird registration Oct 16, 2026) | TBD |
 | [CCAS Annual Meeting 2027](https://ccasociety.org/meetings/upcoming/) | Mar 4, 2027 | Atlantis Paradise Island, Nassau, Bahamas | October 26, 2026 (Noon ET) | OPEN |
 | [SPA-AAP Pediatric Anesthesiology 2027](https://pedsanesthesia.org/education-and-meetings/upcoming-meetings/) | Mar 5–7, 2027 | Atlantis Paradise Island, Nassau, Bahamas | October 26, 2026 (Noon EST) | OPEN |
 | [SCCM Critical Care Congress 2027](https://www.sccm.org/annual-congress/future-congress-dates) | Mar 14–16, 2027 | San Diego Convention Center, San Diego, CA | September 3, 2026 (11:59 PM Central) | CLOSED |
-| [AUA Annual Meeting 2027](https://www.auahq.org/2027-annual-meeting) | Apr 2–4, 2027 | TMC3 Collaborative Building (Helix Hall), Houston, TX | Opening planned for September 2026; submission details and deadline not yet posted | TBD |
+| [AUA Annual Meeting 2027](https://www.auahq.org/2027-annual-meeting) | Apr 2–4, 2027 | TMC3 Collaborative Building (Helix Hall), Houston, TX | December 17, 2026 (11:59 PM EST) | OPEN |
 | [SCA Annual Meeting 2027](https://scahq.org/upcoming-event/sca-annual-meeting-and-workshops-2027/) | Apr 8–11, 2027 | Bellagio, Las Vegas, NV | December 1, 2026 (11:59 PM EST) | OPEN |
 | [CSA Annual Conference 2027](https://csahq.org/events/csa-2027-annual-anesthesia-conference-and-board-meeting/) | Apr 8–11, 2027 | Disneyland Resort, Anaheim, CA | February 8, 2027 | OPEN |
 | [SEA Spring Meeting 2027](https://www.seahq.org/call-for-abstracts) | Apr 16–18, 2027 | Renaissance Minneapolis Hotel, The Depot, Minneapolis, MN | September 30, 2026 (11:59 PM ET) | OPEN |
@@ -62,10 +56,16 @@ Checked September 22, 2026. TBD means the organizer has not provided confirmed s
 | [SPA-AAP Pediatric Anesthesiology 2028](https://pedsanesthesia.org/education-and-meetings/upcoming-meetings/) | Mar 16–20, 2028 | Gaylord National Resort & Convention Center, Oxon Hill, MD | TBD — typically late Oct 2027 | TBD |
 | [AUA Annual Meeting 2028](https://www.auahq.org/future-meetings) | Mar 24–26, 2028 | UCLA Luskin Conference Center, Los Angeles, CA | TBD — typically opens Sept 2027 | TBD |
 
-### Past Cycle Reference (AY 2025–26)
+### Past Meetings (AY 2025–26 and fall 2026)
 
 | Conference | Dates | Location | Abstract Deadline | Status |
 |---|---|---|---|---|
+| [SPA 40th Annual Meeting 2026](https://pedsanesthesia.org/education-and-meetings/upcoming-meetings/) | Oct 16, 2026 | Hilton San Diego Bayfront, San Diego, CA | Closed for 2026 — call opens ~spring for the fall meeting | CLOSED |
+| [TASCON 2026](https://www.tashq.org/events) | Oct 16, 2026 | San Diego, CA | June 28, 2026 | CLOSED |
+| [ANESTHESIOLOGY 2026](https://www.asahq.org/meetings/anesthesiology-annual-meeting) | Oct 16–20, 2026 | San Diego Convention Center, CA | March 31, 2026 | CLOSED |
+| [ASRA Pain Medicine 2026](https://asra.com/events-education/pain-medicine-meeting) | Nov 5–7, 2026 | Tampa, FL | August 7, 2026 | CLOSED |
+| [CSA Fall Conference 2026](https://csahq.org/events/) | Nov 9–13, 2026 | Fairmont Orchid, Big Island, HI | No abstract call verified — CME conference | TBD |
+| [SEA Fall Meeting 2026](https://www.seahq.org/upcoming-meetings) | Nov 12, 2026 | Swissôtel Chicago, Chicago, IL | Closed — SEA's open call is now for Spring 2027 | CLOSED |
 | [CCAS Annual Meeting 2026](https://ccasociety.org/) | Mar 12, 2026 | Sheraton Denver Downtown, Denver, CO | November 17, 2025 (Noon EST) | CLOSED |
 | [SPA-AAP Pediatric Anesthesiology 2026](https://pedsanesthesia.org/) | Mar 13–15, 2026 | Denver, CO | November 17, 2025 | CLOSED |
 | [AUA Annual Meeting 2026](https://www.auahq.org/) | Mar 27–29, 2026 | University of Washington, Seattle, WA | November 2, 2025 | CLOSED |
@@ -76,6 +76,16 @@ Checked September 22, 2026. TBD means the organizer has not provided confirmed s
 | [SEA Spring Meeting 2026](https://www.seahq.org/) | Apr 24–26, 2026 | Live! by Loews, St. Louis, MO | ~January 26, 2026 | CLOSED |
 | [IARS / SOCCA 2026](https://meetings.iars.org/) | May 1–3, 2026 | Fairmont The Queen Elizabeth, Montreal, Canada | Dec 5, 2025 (late-breaking Jan 19, 2026) | CLOSED |
 | [SAMBA Annual Meeting 2026](https://www.sambahq.org/) | May 13–16, 2026 | Gaylord National Resort, Washington, DC | ~Feb 2026 | CLOSED |
+
+### November 13 refresh notes
+
+- Worked through the first monthly check ([issue #1](https://github.com/chinng1/anesthesia-conferences/issues/1)).
+- Moved six meetings that have ended (SPA Fall, TASCON, ANESTHESIOLOGY 2026, ASRA Pain Medicine 2026, SEA Fall 2026, CSA Fall 2026) to the past section, now titled "Past Meetings".
+- AUA 2027 call is open: deadline December 17, 2026, 11:59 PM EST, submitted through abstractscorecard.com. Changed from TBD to OPEN.
+- Re-confirmed SCA (December 1, 11:59 PM EST) and IARS/SOCCA (December 6, 11:59 PM PST) deadlines. STA still lists November 15 only as the award-eligibility cutoff.
+- SAMBA, ASRA Regional & Acute Pain, SOAP, and WARC 2027 calls are still unannounced on official pages; left as TBD.
+- Replaced the dead ASA military abstracts link on TASCON with tashq.org/events.
+- painweek.org returns 503 to automated checks (Cloudflare bot protection); the check now reports this as blocked, not broken.
 
 ### September 22 refresh notes
 

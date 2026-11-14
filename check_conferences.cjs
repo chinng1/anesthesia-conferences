@@ -119,6 +119,9 @@ async function checkUrl(url, timeoutMs = 20000) {
       if (res.ok) return ['ok', String(res.status)];
       if (method === 'HEAD' && [400, 403, 404, 405, 500, 501, 503].includes(res.status)) continue;
       if (BLOCKED_CODES.has(res.status)) return ['blocked', `HTTP ${res.status}`];
+      // Cloudflare answers bots with 503 even when the site is up for people.
+      if (res.status === 503 && /cloudflare/i.test(res.headers.get('server') || ''))
+        return ['blocked', 'HTTP 503 from Cloudflare bot protection'];
       return ['broken', `HTTP ${res.status}`];
     } catch (err) {
       if (method === 'HEAD') continue;

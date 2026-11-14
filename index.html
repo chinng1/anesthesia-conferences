@@ -306,7 +306,7 @@
   <div class="subtitle">Presentation &amp; abstract opportunities for UCSF Anesthesia Residents</div>
   <div class="meta">
     <span>Academic Years 2026–27 &amp; 2027–28</span>
-    <span>Last updated: September 22, 2026</span>
+    <span>Last updated: November 13, 2026</span>
     <span>Gregory A. Chinn, MD PhD — UCSF Anesthesia &amp; Perioperative Care</span>
   </div>
 </header>
@@ -384,8 +384,8 @@
 
       <div class="year-section" id="section-past">
         <div class="year-header">
-          <span class="year-label past">AY 2025–26</span>
-          <h2 class="past">Past Cycle — Plan Ahead for 2027</h2>
+          <span class="year-label past">Past</span>
+          <h2 class="past">Past Meetings — Plan Ahead for Next Cycle</h2>
           <div class="year-divider"></div>
           <span class="year-count"></span>
         </div>
@@ -450,7 +450,7 @@ const CONFERENCES = [
     abstractUrl: 'https://pedsanesthesia.org/call-for-abstracts/',
     tags: ['pediatric'],
     color: '#f59e0b',
-    ay: '2026-27',
+    ay: 'past',
     url: 'https://pedsanesthesia.org/education-and-meetings/upcoming-meetings/',
     focus: 'One-day pediatric anesthesia meeting the day before ASA opens in San Diego — easy add-on if you are already attending ASA. Registration and housing are open.',
   },
@@ -465,12 +465,12 @@ const CONFERENCES = [
     abstractDeadline: [2026,6,28],
     abstractDeadlineText: 'June 28, 2026',
     abstractStatus: 'closed',
-    abstractUrl: 'https://www.asahq.org/annualmeeting/education/military/abstracts',
+    abstractUrl: 'https://www.tashq.org/events',
     tags: ['trauma','core'],
     color: '#ea580c',
-    ay: '2026-27',
+    ay: 'past',
     url: 'https://www.tashq.org/events',
-    focus: 'Trauma anesthesiology: hemorrhage control, damage-control resuscitation, airway management in trauma, neuroanesthesia for TBI, mass casualty care. Free abstract submission via the ASA portal; registration still open.',
+    focus: 'Trauma anesthesiology: hemorrhage control, damage-control resuscitation, airway management in trauma, neuroanesthesia for TBI, mass casualty care. Abstracts were submitted free through the ASA portal; watch tashq.org for the 2027 call.',
   },
   {
     id: 'asa-2026',
@@ -485,7 +485,7 @@ const CONFERENCES = [
     abstractUrl: 'https://www.asahq.org/annualmeeting/education/submissions',
     tags: ['core','academic','critical'],
     color: '#1a3a5c',
-    ay: '2026-27',
+    ay: 'past',
     url: 'https://www.asahq.org/meetings/anesthesiology-annual-meeting',
     focus: 'Flagship annual anesthesia meeting (~16,000 attendees). All subspecialties: clinical research, simulation, education, practice management, patient safety, perioperative medicine, and wellness.',
   },
@@ -502,7 +502,7 @@ const CONFERENCES = [
     abstractUrl: 'https://asrapmabstracts.secure-platform.com/a',
     tags: ['regional'],
     color: '#db2777',
-    ay: '2026-27',
+    ay: 'past',
     url: 'https://asra.com/events-education/pain-medicine-meeting',
     focus: '25th Annual Pain Medicine Meeting. Interventional pain, chronic pain management, neuromodulation, opioid use disorder, multimodal analgesia. Fellows\' interventional pain workshop on Nov 4 (pre-meeting).',
   },
@@ -520,7 +520,7 @@ const CONFERENCES = [
     abstractUrl: 'https://www.seahq.org/call-for-abstracts',
     tags: ['education','academic'],
     color: '#7c3aed',
-    ay: '2026-27',
+    ay: 'past',
     url: 'https://www.seahq.org/upcoming-meetings',
     focus: 'One-day education meeting ahead of the SAAAPM annual meeting. Curriculum development, simulation, assessment tools, GME, faculty development. Attend this one and submit to SEA Spring 2027 instead.',
   },
@@ -609,15 +609,17 @@ const CONFERENCES = [
     end: [2027,4,4],
     location: 'TMC3 Collaborative Building (Helix Hall), Houston, TX',
     locationNote: 'Hosted by McGovern Medical School at UTHealth Houston',
-    abstractDeadline: null,
-    abstractDeadlineText: "Opening planned for September 2026; submission details and deadline not yet posted",
-    abstractStatus: "tbd",
-    abstractUrl: 'https://www.auahq.org/2027-annual-meeting',
+    abstractConfirmedOpenOn: [2026,11,13],
+    abstractDeadline: [2026,12,17],
+    abstractDeadlineText: 'December 17, 2026 (11:59 PM EST)',
+    abstractClosesAt: '2026-12-17T23:59:00-05:00',
+    abstractStatus: 'open',
+    abstractUrl: 'https://www.abstractscorecard.com/cfp/submit/login.asp?EventKey=WGLDANSI',
     tags: ['academic','education'],
     color: '#2563eb',
     ay: '2026-27',
     url: 'https://www.auahq.org/2027-annual-meeting',
-    focus: 'Premier academic anesthesiology society. Scientific abstracts only — medically challenging case reports are NOT accepted. Translational science, health services research, medical education. Ideal for residents pursuing academic careers; trainee travel awards available. Registration opens Oct 2026.',
+    focus: 'Premier academic anesthesiology society. Scientific abstracts only — medically challenging case reports are NOT accepted. Translational science, health services research, medical education. Ideal for residents pursuing academic careers; trainee travel awards available. Decisions January 2027.',
   },
   {
     id: 'sca-2027',
@@ -890,7 +892,7 @@ const CONFERENCES = [
     abstractUrl: "https://csahq.org/events/",
     tags: ["core", "california"],
     color: "#d97706",
-    ay: "2026-27",
+    ay: 'past',
     url: "https://csahq.org/events/",
     focus: "Clinical continuing education. Check the organizer for presentation opportunities; no abstract call verified.",
   },
@@ -1320,7 +1322,7 @@ function renderList() {
     (mkDate(a.start)?.getTime() ?? Infinity) - (mkDate(b.start)?.getTime() ?? Infinity));
   let html = '';
   let lastAY = null;
-  const ayLabels = { '2026-27':'Academic Year 2026–27 (July 2026 – June 2027)', '2027-28':'Academic Year 2027–28 (July 2027+)', 'past':'Past Cycle — AY 2025–26' };
+  const ayLabels = { '2026-27':'Academic Year 2026–27 (July 2026 – June 2027)', '2027-28':'Academic Year 2027–28 (July 2027+)', 'past':'Past Meetings (AY 2025–26 and fall 2026)' };
 
   sorted.forEach(c => {
     if (c.ay !== lastAY) {
